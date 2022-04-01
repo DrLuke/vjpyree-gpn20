@@ -469,7 +469,7 @@ dependencies = [
 [[package]]
 name = "bevy_osc"
 version = "0.1.0"
-source = "git+https://github.com/DrLuke/bevy_osc?branch=initial#ec7dae15c90a762c100c3026f50d8771250fd663"
+source = "git+https://github.com/DrLuke/bevy_osc?branch=initial#f887e392d76a73956577cc65b7c9b073a5cd1079"
 dependencies = [
  "bevy",
  "nom 7.1.1",
