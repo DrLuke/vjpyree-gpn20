@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 bevy = "0.6"
 bevy_osc = { git = "https://github.com/DrLuke/bevy_osc", branch = "initial" }
+rand = "0.8"
+rosc = "0.7.0"
