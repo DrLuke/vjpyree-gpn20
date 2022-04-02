@@ -25,7 +25,7 @@ fn main() {
 
         .insert_resource(OscUdpServer::new("0.0.0.0:31337").unwrap())
         .insert_resource(OscDispatcher::default())
-        .insert_resource(OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([1,2,3,4]), 31337).unwrap()))
+        .insert_resource(OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([1,2,3,4]), 31337).into()).unwrap())
         .add_system(receive_packets)
 
         .run();
