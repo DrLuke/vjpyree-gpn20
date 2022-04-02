@@ -469,7 +469,7 @@ dependencies = [
 [[package]]
 name = "bevy_osc"
 version = "0.1.0"
-source = "git+https://github.com/DrLuke/bevy_osc?branch=initial#f06d3e8366ba6e6d78194a4b382d585009d8f673"
+source = "git+https://github.com/DrLuke/bevy_osc?branch=initial#761b936a59c6360f7f13e55f24387b811d1e5cb2"
 dependencies = [
  "bevy",
  "nom 7.1.1",
@@ -788,9 +788,9 @@ checksum = "a4a45a46ab1f2412e53d3a0ade76ffad2025804294569aae387231a0cd6e0899"
 
 [[package]]
 name = "bytemuck"
-version = "1.9.0"
+version = "1.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee1e0e2125faccb856bf10b0a9dfa89c4c718d05ef85580dfefbdf1c422ef801"
+checksum = "cdead85bdec19c194affaeeb670c0e41fe23de31459efd1c174d049269cf02cc"
 dependencies = [
  "bytemuck_derive",
 ]
@@ -2616,9 +2616,9 @@ checksum = "7fdf1b9db47230893d76faad238fd6097fd6d6a9245cd7a4d90dbd639536bbd2"
 
 [[package]]
 name = "slab"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9def91fd1e018fe007022791f865d0ccc9b3a0d5001e01aabb8b40e46000afb5"
+checksum = "eb703cfe953bccee95685111adeedb76fabe4e97549a58d16f03ea7b9367bb32"
 
 [[package]]
 name = "slotmap"
