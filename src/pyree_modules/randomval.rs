@@ -13,7 +13,10 @@ pub struct RandomValComponent {
     // Value of randval
     label: String,
     // Label that show up above randval
-    on_beat: bool,  //
+    on_beat: bool,
+    // Trigger on every n-th beat
+    beat_counter: u32,
+    beat_divisor: u32,
 }
 
 impl RandomValComponent {
@@ -23,6 +26,8 @@ impl RandomValComponent {
             value: 0.0,
             label,
             on_beat: false,
+            beat_counter: 1,
+            beat_divisor: 1,
         }
     }
 
@@ -35,6 +40,7 @@ impl RandomValComponent {
             OscMessage { addr: format!("/randomval/numlabel{}/color", self.index), args: vec!["red".into()] }
         }
     }
+    fn div_label_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/div_label{}", self.index), args: vec![format!("{: >3}  :  {: <3}", self.beat_counter, self.beat_divisor).into()] } }
 
     fn on_beat(&mut self, osc_client: &OscUdpClient) {
         if !self.on_beat { return; }
@@ -67,6 +73,30 @@ impl RandomValComponent {
         }
     }
 
+    fn on_inc_div(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
+        if osc_message.args.len() == 1 {
+            if let OscType::Float(val) = osc_message.args[0] {
+                if val > 0. {
+                    self.beat_divisor += 1;
+                    self.send_messages(osc_client, vec![self.div_label_msg()])
+                }
+            }
+        }
+    }
+
+    fn on_dec_div(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
+        if osc_message.args.len() == 1 {
+            if let OscType::Float(val) = osc_message.args[0] {
+                if val > 0. {
+                    if self.beat_divisor > 1 {
+                        self.beat_divisor -= 1;
+                        self.send_messages(osc_client, vec![self.div_label_msg()])
+                    }
+                }
+            }
+        }
+    }
+
     fn send_messages(&self, osc_client: &OscUdpClient, messages: Vec<OscMessage>) {
         for msg in messages {
             if let Err(e) = osc_client.send(&OscPacket::Message(msg)) {
@@ -79,7 +109,10 @@ impl RandomValComponent {
         vec![
             OscMethod::new("/beat").unwrap(),
             OscMethod::new(format!("/randomval/rotary{}", index).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/on_beat/1/{}", index+1).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/on_beat/1/{}", index + 1).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/div/3/{}", index + 1).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/div/2/{}", index + 1).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/div/1/{}", index + 1).as_str()).unwrap(),
         ]
     }
 }
@@ -128,6 +161,16 @@ pub fn random_val_receive(mut osc_client: ResMut<OscUdpClient>, mut query: Query
         // OnBeat toggle
         if let Some(msg) = get_newest_message(&mut omm.methods[2]) {
             rvc.on_set_on_beat(osc_client.deref_mut(), msg)
+        }
+        // Increment divisor
+        if let Some(msg) = get_newest_message(&mut omm.methods[3]) {
+            rvc.on_inc_div(osc_client.deref_mut(), msg)
+        }
+        // Trigger beat
+
+        // Decrement divisor
+        if let Some(msg) = get_newest_message(&mut omm.methods[5]) {
+            rvc.on_dec_div(osc_client.deref_mut(), msg)
         }
     }
 }
