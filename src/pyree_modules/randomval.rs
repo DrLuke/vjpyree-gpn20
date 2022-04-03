@@ -17,6 +17,10 @@ pub struct RandomValComponent {
     // Trigger on every n-th beat
     beat_counter: u32,
     beat_divisor: u32,
+    // Max change of value on beat
+    delta: f32,
+    // Wrap value if it crosses 0,1 range
+    wrap: bool
 }
 
 impl RandomValComponent {
@@ -28,6 +32,8 @@ impl RandomValComponent {
             on_beat: false,
             beat_counter: 0,
             beat_divisor: 1,
+            delta: 1.,
+            wrap: true
         }
     }
 
@@ -102,10 +108,31 @@ impl RandomValComponent {
         }
     }
 
+    fn on_delta(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
+        if osc_message.args.len() == 1 {
+            if let OscType::Float(val) = osc_message.args[0] {
+                self.delta = val;
+            }
+        }
+    }
+
+    fn on_wrap(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
+        if osc_message.args.len() == 1 {
+            if let OscType::Float(val) = osc_message.args[0] {
+                self.wrap = if val > 0. { true } else { false };
+            }
+        }
+    }
+
     fn beat(&mut self, osc_client: &OscUdpClient) {
         self.beat_counter = (self.beat_counter + 1) % self.beat_divisor;
         if self.beat_counter == 0 {
-            self.value = random();
+            self.value = (self.value + (random::<f32>()-0.5) * self.delta);
+            if self.wrap {
+                self.value = self.value.rem_euclid(1.0);
+            } else {
+                self.value = self.value.min(1.).max(0.);
+            }
         }
 
         self.send_messages(osc_client, vec![
@@ -131,6 +158,8 @@ impl RandomValComponent {
             OscMethod::new(format!("/randomval/div/3/{}", index + 1).as_str()).unwrap(),
             OscMethod::new(format!("/randomval/div/2/{}", index + 1).as_str()).unwrap(),
             OscMethod::new(format!("/randomval/div/1/{}", index + 1).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/delta{}", index).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/wrap{}", index).as_str()).unwrap(),
         ]
     }
 }
@@ -191,6 +220,14 @@ pub fn random_val_receive(mut osc_client: ResMut<OscUdpClient>, mut query: Query
         // Decrement divisor
         if let Some(msg) = get_newest_message(&mut omm.methods[5]) {
             rvc.on_dec_div(osc_client.deref_mut(), msg)
+        }
+        // Delta rotary
+        if let Some(msg) = get_newest_message(&mut omm.methods[6]) {
+            rvc.on_delta(osc_client.deref_mut(), msg)
+        }
+        // OnBeat toggle
+        if let Some(msg) = get_newest_message(&mut omm.methods[7]) {
+            rvc.on_wrap(osc_client.deref_mut(), msg)
         }
     }
 }
