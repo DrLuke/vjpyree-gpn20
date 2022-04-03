@@ -4,8 +4,6 @@ use bevy_osc::{OscMethod, OscMultiMethod, OscUdpClient};
 use rand::prelude::random;
 use rosc::{OscMessage, OscPacket, OscType};
 
-pub struct RandomVal(u64);
-
 /// Generates a random value on every beat
 #[derive(Component)]
 pub struct RandomValComponent {
@@ -81,6 +79,7 @@ impl RandomValBundle {
     }
 }
 
+/// Discard all but the newest message
 fn get_newest_message(osc_method: &mut OscMethod) -> Option<OscMessage> {
     let mut messages: Vec<OscMessage> = vec![];
     loop {
@@ -92,10 +91,11 @@ fn get_newest_message(osc_method: &mut OscMethod) -> Option<OscMessage> {
     messages.pop()
 }
 
+/// Receive OSC messages
 pub fn random_val_receive(mut osc_client: ResMut<OscUdpClient>, mut query: Query<(&mut RandomValComponent, &mut OscMultiMethod), Changed<OscMultiMethod>>) {
     for (mut rvc, mut omm) in query.iter_mut() {
         // Beat
-        if let Some(msg) = get_newest_message(&mut omm.methods[0]) {
+        if let Some(_) = get_newest_message(&mut omm.methods[0]) {
             rvc.beat(osc_client.deref_mut())
         }
         // Rotary

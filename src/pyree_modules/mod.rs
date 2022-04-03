@@ -1,13 +1,12 @@
 use bevy::prelude::*;
-use bevy_osc::OscMultiMethod;
 
 mod randomval;
 
 use randomval::random_val_receive;
-use crate::pyree_modules::randomval::{RandomVal, RandomValBundle, RandomValComponent};
+use crate::pyree_modules::randomval::{RandomValBundle};
 
 fn spawn_randomval(mut commands: Commands) {
-    commands.spawn_bundle(RandomValBundle::new(0));
+    commands.spawn_bundle(RandomValBundle::new(0, "test".to_string()));
 }
 
 pub fn pyree_system_set() -> SystemSet {
