@@ -2,7 +2,7 @@ use std::ops::DerefMut;
 use bevy::prelude::*;
 use bevy_osc::{OscMethod, OscMultiMethod, OscUdpClient};
 use rand::prelude::random;
-use rosc::{OscMessage, OscPacket, OscType};
+use rosc::{OscBundle, OscMessage, OscPacket, OscTime, OscType};
 
 /// Generates a random value on every beat
 #[derive(Component)]
@@ -20,7 +20,7 @@ pub struct RandomValComponent {
     // Max change of value on beat
     delta: f32,
     // Wrap value if it crosses 0,1 range
-    wrap: bool
+    wrap: bool,
 }
 
 impl RandomValComponent {
@@ -33,20 +33,24 @@ impl RandomValComponent {
             beat_counter: 0,
             beat_divisor: 1,
             delta: 1.,
-            wrap: true
+            wrap: true,
         }
     }
 
+    fn label_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/label{}", self.index), args: vec![self.label.as_str().into()] } }
     fn num_label_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/numlabel{}", self.index), args: vec![format!("{:.2}", self.value).into()] } }
     fn rotary_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/rotary{}", self.index), args: vec![self.value.into()] } }
-    fn colors_msg(&self, enabled: bool) -> OscMessage {
-        if enabled {
+    fn colors_msg(&self) -> OscMessage {
+        if self.on_beat {
             OscMessage { addr: format!("/randomval/numlabel{}/color", self.index), args: vec!["orange".into()] }
         } else {
             OscMessage { addr: format!("/randomval/numlabel{}/color", self.index), args: vec!["red".into()] }
         }
     }
     fn div_label_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/div_label{}", self.index), args: vec![format!("{: >3}  :  {: <3}", self.beat_counter + 1, self.beat_divisor).into()] } }
+    fn on_beat_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/on_beat/1/{}", self.index + 1), args: vec![(if self.on_beat { 1 } else { 0 }).into()] } }
+    fn wrap_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/wrap{}", self.index), args: vec![(if self.on_beat { 1 } else { 0 }).into()] } }
+    fn delta_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/delta{}", self.index), args: vec![self.delta.into()] } }
 
     fn on_beat(&mut self, osc_client: &OscUdpClient) {
         if !self.on_beat { return; }
@@ -69,7 +73,7 @@ impl RandomValComponent {
         if osc_message.args.len() == 1 {
             if let OscType::Float(val) = osc_message.args[0] {
                 self.on_beat = if val > 0. { true } else { false };
-                self.send_messages(osc_client, vec![self.colors_msg(self.on_beat)])
+                self.send_messages(osc_client, vec![self.colors_msg()])
             }
         }
     }
@@ -127,7 +131,7 @@ impl RandomValComponent {
     fn beat(&mut self, osc_client: &OscUdpClient) {
         self.beat_counter = (self.beat_counter + 1) % self.beat_divisor;
         if self.beat_counter == 0 {
-            self.value = (self.value + (random::<f32>()-0.5) * self.delta);
+            self.value = (self.value + (random::<f32>() - 0.5) * self.delta);
             if self.wrap {
                 self.value = self.value.rem_euclid(1.0);
             } else {
@@ -140,6 +144,25 @@ impl RandomValComponent {
             self.rotary_msg(),
             self.div_label_msg(),
         ])
+    }
+
+    pub fn update_ui(&mut self, osc_client: &OscUdpClient) {
+        let bundle = OscBundle {
+            timetag: OscTime { seconds: 0, fractional: 0 },
+            content: vec![
+                OscPacket::Message(self.label_msg()),
+                OscPacket::Message(self.num_label_msg()),
+                OscPacket::Message(self.rotary_msg()),
+                OscPacket::Message(self.colors_msg()),
+                OscPacket::Message(self.div_label_msg()),
+                OscPacket::Message(self.on_beat_msg()),
+                OscPacket::Message(self.wrap_msg()),
+                OscPacket::Message(self.delta_msg()),
+            ],
+        };
+        if let Err(e) = osc_client.send(&OscPacket::Bundle(bundle)) {
+            println!("{}", e);
+        }
     }
 
     fn send_messages(&self, osc_client: &OscUdpClient, messages: Vec<OscMessage>) {

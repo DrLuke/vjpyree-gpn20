@@ -1,9 +1,12 @@
+use std::thread::sleep;
+use std::time::Duration;
 use bevy::prelude::*;
+use bevy_osc::OscUdpClient;
 
 mod randomval;
 
 use randomval::random_val_receive;
-use crate::pyree_modules::randomval::{RandomValBundle};
+use crate::pyree_modules::randomval::{RandomValBundle, RandomValComponent};
 
 fn spawn_randomval(mut commands: Commands) {
     commands.spawn_bundle(RandomValBundle::new(0, "test".to_string()));
@@ -18,9 +21,16 @@ fn spawn_randomval(mut commands: Commands) {
     commands.spawn_bundle(RandomValBundle::new(9, "test".to_string()));
 }
 
+fn init_randomval_gui(osc_client: ResMut<OscUdpClient>, mut query: Query<&mut RandomValComponent, Added<RandomValComponent>>) {
+    for mut rvc in query.iter_mut() {
+        rvc.update_ui(&osc_client);
+    }
+}
+
 pub fn pyree_system_set() -> SystemSet {
     SystemSet::new()
         .with_system(random_val_receive)
+        .with_system(init_randomval_gui)
 }
 
 pub fn pyree_startup_system_set() -> SystemSet {

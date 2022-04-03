@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = "0.6"
+bevy = { version = "0.6", features = ["wayland"] }
 bevy_osc = { git = "https://github.com/DrLuke/bevy_osc", branch = "initial" }
 rand = "0.8"
 rosc = "0.7.0"
