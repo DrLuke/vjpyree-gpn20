@@ -1,6 +1,9 @@
 use std::net::{Ipv4Addr, SocketAddrV4};
 use bevy::prelude::*;
 use bevy_osc::{OscDispatcher, OscMethod, OscMultiMethod, OscUdpClient, OscUdpServer};
+use crate::pyree_modules::{pyree_startup_system_set, pyree_system_set};
+
+mod pyree_modules;
 
 /// Read `OscPacket`s from udp server until no more messages are received and then dispatch them
 fn receive_packets(mut disp: ResMut<OscDispatcher>, osc_server: Res<OscUdpServer>, method_query: Query<&mut OscMethod>, multi_method_query: Query<&mut OscMultiMethod>) {
@@ -25,8 +28,11 @@ fn main() {
 
         .insert_resource(OscUdpServer::new("0.0.0.0:31337").unwrap())
         .insert_resource(OscDispatcher::default())
-        .insert_resource(OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([1,2,3,4]), 31337).into()).unwrap())
+        .insert_resource(OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([192,168,0,37]), 31337).into()).unwrap())
         .add_system(receive_packets)
+
+        .add_system_set(pyree_system_set())
+        .add_startup_system_set(pyree_startup_system_set())
 
         .run();
 }
