@@ -8,8 +8,12 @@ use rosc::{OscMessage, OscPacket, OscType};
 #[derive(Component)]
 pub struct RandomValComponent {
     index: u32,
+    // Horizontal index
     value: f32,
+    // Value of randval
     label: String,
+    // Label that show up above randval
+    on_beat: bool,  //
 }
 
 impl RandomValComponent {
@@ -18,13 +22,22 @@ impl RandomValComponent {
             index,
             value: 0.0,
             label,
+            on_beat: false,
         }
     }
 
     fn num_label_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/numlabel{}", self.index), args: vec![format!("{:.2}", self.value).into()] } }
     fn rotary_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/rotary{}", self.index), args: vec![self.value.into()] } }
+    fn colors_msg(&self, enabled: bool) -> OscMessage {
+        if enabled {
+            OscMessage { addr: format!("/randomval/on_beat{}/color", self.index), args: vec!["blue".into()] }
+        } else {
+            OscMessage { addr: format!("/randomval/on_beat{}/color", self.index), args: vec!["orange".into()] }
+        }
+    }
 
     fn on_beat(&mut self, osc_client: &OscUdpClient) {
+        if !self.on_beat { return; }
         self.value = random();
 
         self.send_messages(osc_client, vec![
@@ -45,6 +58,15 @@ impl RandomValComponent {
         }
     }
 
+    fn on_set_on_beat(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
+        if osc_message.args.len() == 1 {
+            if let OscType::Float(val) = osc_message.args[0] {
+                self.on_beat = if val > 0. { true } else { false };
+                self.send_messages(osc_client, vec![self.colors_msg(self.on_beat)])
+            }
+        }
+    }
+
     fn send_messages(&self, osc_client: &OscUdpClient, messages: Vec<OscMessage>) {
         for msg in messages {
             if let Err(e) = osc_client.send(&OscPacket::Message(msg)) {
@@ -57,11 +79,7 @@ impl RandomValComponent {
         vec![
             OscMethod::new("/beat").unwrap(),
             OscMethod::new(format!("/randomval/rotary{}", index).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/toggle{}/1/1", index).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/toggle{}/1/2", index).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/toggle{}/1/3", index).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/toggle{}/1/4", index).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/toggle{}/1/5", index).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/on_beat{}", index).as_str()).unwrap(),
         ]
     }
 }
@@ -106,6 +124,10 @@ pub fn random_val_receive(mut osc_client: ResMut<OscUdpClient>, mut query: Query
         // Rotary
         if let Some(msg) = get_newest_message(&mut omm.methods[1]) {
             rvc.on_rotary(osc_client.deref_mut(), msg)
+        }
+        // OnBeat toggle
+        if let Some(msg) = get_newest_message(&mut omm.methods[2]) {
+            rvc.on_set_on_beat(osc_client.deref_mut(), msg)
         }
     }
 }
