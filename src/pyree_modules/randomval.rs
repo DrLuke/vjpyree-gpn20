@@ -9,41 +9,46 @@ use rosc::{OscMessage, OscPacket, OscType};
 pub struct RandomValComponent {
     index: u32,
     value: f32,
+    label: String,
 }
 
 impl RandomValComponent {
-    pub fn new(index: u32) -> Self {
-        Self{
+    pub fn new(index: u32, label: String) -> Self {
+        Self {
             index,
-            value: 0.0
+            value: 0.0,
+            label,
         }
     }
 
-    fn beat(&mut self, osc_client: &OscUdpClient) {
-        self.set_val(osc_client, random());
+    fn num_label_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/numlabel{}", self.index), args: vec![format!("{:.2}", self.value).into()] } }
+    fn rotary_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/rotary{}", self.index), args: vec![self.value.into()] } }
+
+    fn on_beat(&mut self, osc_client: &OscUdpClient) {
+        self.value = random();
+
+        self.send_messages(osc_client, vec![
+            self.num_label_msg(),
+            self.rotary_msg(),
+        ])
     }
 
-    fn rotary(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
+    fn on_rotary(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
         if osc_message.args.len() == 1 {
-            match osc_message.args[0] {
-                OscType::Float(val) => self.set_val(osc_client, val),
-                _ => {}
+            if let OscType::Float(val) = osc_message.args[0] {
+                self.value = val;
+
+                self.send_messages(osc_client, vec![
+                    self.num_label_msg(),
+                ])
             }
         }
     }
 
-    fn set_val(&mut self, osc_client: &OscUdpClient, value: f32) {
-        self.value = value;
-
-        let out: Vec<OscMessage> = vec![
-            OscMessage { addr: format!("/randomval/label{}", self.index), args: vec![format!("{:.2}", self.value).into()] },
-            OscMessage { addr: format!("/randomval/rotary{}", self.index), args: vec![self.value.into()] },
-        ];
-
-        for msg in out {
-            match osc_client.send(&OscPacket::Message(msg)) {
-                Ok(_) => (),
-                Err(e) => println!("{}", e)
+    fn send_messages(&self, osc_client: &OscUdpClient, messages: Vec<OscMessage>) {
+        for msg in messages {
+            if let Err(e) = osc_client.send(&OscPacket::Message(msg)) {
+                println!("{}", e);
             }
         }
     }
@@ -65,16 +70,16 @@ impl RandomValComponent {
 #[derive(Component)]
 pub struct RandomValBundle {
     random_val: RandomValComponent,
-    osc_multi_method: OscMultiMethod
+    osc_multi_method: OscMultiMethod,
 }
 
 impl RandomValBundle {
-    pub fn new(index: u32) -> Self {
+    pub fn new(index: u32, label: String) -> Self {
         Self {
-            random_val: RandomValComponent::new(index),
-            osc_multi_method: OscMultiMethod{
+            random_val: RandomValComponent::new(index, label),
+            osc_multi_method: OscMultiMethod {
                 methods: RandomValComponent::gen_osc_methods(index)
-            }
+            },
         }
     }
 }
@@ -96,11 +101,11 @@ pub fn random_val_receive(mut osc_client: ResMut<OscUdpClient>, mut query: Query
     for (mut rvc, mut omm) in query.iter_mut() {
         // Beat
         if let Some(_) = get_newest_message(&mut omm.methods[0]) {
-            rvc.beat(osc_client.deref_mut())
+            rvc.on_beat(osc_client.deref_mut())
         }
         // Rotary
         if let Some(msg) = get_newest_message(&mut omm.methods[1]) {
-            rvc.rotary(osc_client.deref_mut(), msg)
+            rvc.on_rotary(osc_client.deref_mut(), msg)
         }
     }
 }
