@@ -30,9 +30,9 @@ impl RandomValComponent {
     fn rotary_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/rotary{}", self.index), args: vec![self.value.into()] } }
     fn colors_msg(&self, enabled: bool) -> OscMessage {
         if enabled {
-            OscMessage { addr: format!("/randomval/on_beat{}/color", self.index), args: vec!["blue".into()] }
+            OscMessage { addr: format!("/randomval/numlabel{}/color", self.index), args: vec!["orange".into()] }
         } else {
-            OscMessage { addr: format!("/randomval/on_beat{}/color", self.index), args: vec!["orange".into()] }
+            OscMessage { addr: format!("/randomval/numlabel{}/color", self.index), args: vec!["red".into()] }
         }
     }
 
@@ -79,7 +79,7 @@ impl RandomValComponent {
         vec![
             OscMethod::new("/beat").unwrap(),
             OscMethod::new(format!("/randomval/rotary{}", index).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/on_beat{}", index).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/on_beat/1/{}", index+1).as_str()).unwrap(),
         ]
     }
 }
