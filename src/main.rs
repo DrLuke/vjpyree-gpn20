@@ -22,13 +22,24 @@ fn receive_packets(mut disp: ResMut<OscDispatcher>, osc_server: Res<OscUdpServer
     disp.dispatch(osc_packets, method_query, multi_method_query);
 }
 
+pub struct OscClients {
+    pub clients: Vec<OscUdpClient>,
+}
+
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
 
         .insert_resource(OscUdpServer::new("0.0.0.0:31337").unwrap())
         .insert_resource(OscDispatcher::default())
-        .insert_resource(OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([192,168,0,37]), 31337).into()).unwrap())
+        .insert_resource(OscClients {
+            clients: vec![
+                // TouchOSC
+                OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([192, 168, 0, 37]), 31337).into()).unwrap(),
+                // Pyree Engine
+                OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([127, 0, 0, 1]), 31338).into()).unwrap(),
+            ]
+        })
         .add_system(receive_packets)
 
         .add_system_set(pyree_system_set())

@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy_osc::{OscMethod, OscMultiMethod, OscUdpClient};
 use rand::prelude::random;
 use rosc::{OscBundle, OscMessage, OscPacket, OscTime, OscType};
+use crate::OscClients;
 
 /// Generates a random value on every beat
 #[derive(Component)]
@@ -218,39 +219,41 @@ fn get_newest_message(osc_method: &mut OscMethod) -> Option<OscMessage> {
 }
 
 /// Receive OSC messages
-pub fn random_val_receive(mut osc_client: ResMut<OscUdpClient>, mut query: Query<(&mut RandomValComponent, &mut OscMultiMethod), Changed<OscMultiMethod>>) {
+pub fn random_val_receive(mut osc_clients: ResMut<OscClients>, mut query: Query<(&mut RandomValComponent, &mut OscMultiMethod), Changed<OscMultiMethod>>) {
+    let mut touch_osc_client = &osc_clients.clients[0];
+
     for (mut rvc, mut omm) in query.iter_mut() {
         // Beat
         if let Some(_) = get_newest_message(&mut omm.methods[0]) {
-            rvc.on_beat(osc_client.deref_mut())
+            rvc.on_beat(touch_osc_client)
         }
         // Rotary
         if let Some(msg) = get_newest_message(&mut omm.methods[1]) {
-            rvc.on_rotary(osc_client.deref_mut(), msg)
+            rvc.on_rotary(touch_osc_client, msg)
         }
         // OnBeat toggle
         if let Some(msg) = get_newest_message(&mut omm.methods[2]) {
-            rvc.on_set_on_beat(osc_client.deref_mut(), msg)
+            rvc.on_set_on_beat(touch_osc_client, msg)
         }
         // Increment divisor
         if let Some(msg) = get_newest_message(&mut omm.methods[3]) {
-            rvc.on_inc_div(osc_client.deref_mut(), msg)
+            rvc.on_inc_div(touch_osc_client, msg)
         }
         // Trigger beat
         if let Some(msg) = get_newest_message(&mut omm.methods[4]) {
-            rvc.on_trig_beat(osc_client.deref_mut(), msg)
+            rvc.on_trig_beat(touch_osc_client, msg)
         }
         // Decrement divisor
         if let Some(msg) = get_newest_message(&mut omm.methods[5]) {
-            rvc.on_dec_div(osc_client.deref_mut(), msg)
+            rvc.on_dec_div(touch_osc_client, msg)
         }
         // Delta rotary
         if let Some(msg) = get_newest_message(&mut omm.methods[6]) {
-            rvc.on_delta(osc_client.deref_mut(), msg)
+            rvc.on_delta(touch_osc_client, msg)
         }
         // OnBeat toggle
         if let Some(msg) = get_newest_message(&mut omm.methods[7]) {
-            rvc.on_wrap(osc_client.deref_mut(), msg)
+            rvc.on_wrap(touch_osc_client, msg)
         }
     }
 }

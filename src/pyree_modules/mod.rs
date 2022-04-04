@@ -6,6 +6,7 @@ use bevy_osc::OscUdpClient;
 mod randomval;
 
 use randomval::random_val_receive;
+use crate::OscClients;
 use crate::pyree_modules::randomval::{RandomValBundle, RandomValComponent};
 
 fn spawn_randomval(mut commands: Commands) {
@@ -21,9 +22,9 @@ fn spawn_randomval(mut commands: Commands) {
     commands.spawn_bundle(RandomValBundle::new(9, "test".to_string()));
 }
 
-fn init_randomval_gui(osc_client: ResMut<OscUdpClient>, mut query: Query<&mut RandomValComponent, Added<RandomValComponent>>) {
+fn init_randomval_gui(osc_client: ResMut<OscClients>, mut query: Query<&mut RandomValComponent, Added<RandomValComponent>>) {
     for mut rvc in query.iter_mut() {
-        rvc.update_ui(&osc_client);
+        rvc.update_ui(&osc_client.clients[0]);
     }
 }
 
