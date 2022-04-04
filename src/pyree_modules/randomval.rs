@@ -52,10 +52,11 @@ impl RandomValComponent {
     fn on_beat_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/on_beat/1/{}", self.index + 1), args: vec![(if self.on_beat { 1 } else { 0 }).into()] } }
     fn wrap_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/wrap{}", self.index), args: vec![(if self.on_beat { 1 } else { 0 }).into()] } }
     fn delta_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/delta{}", self.index), args: vec![self.delta.into()] } }
+    fn engine_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/{}", self.index), args: vec![self.value.into()] } }
 
-    fn on_beat(&mut self, osc_client: &OscUdpClient) {
+    fn on_beat(&mut self, osc_client: &OscUdpClient, engine_client: &OscUdpClient) {
         if !self.on_beat { return; }
-        self.beat(osc_client);
+        self.beat(osc_client, engine_client);
     }
 
     fn on_rotary(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
@@ -103,11 +104,11 @@ impl RandomValComponent {
         }
     }
 
-    fn on_trig_beat(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
+    fn on_trig_beat(&mut self, osc_client: &OscUdpClient, engine_client: &OscUdpClient, osc_message: OscMessage) {
         if osc_message.args.len() == 1 {
             if let OscType::Float(val) = osc_message.args[0] {
                 if val > 0. {
-                    self.beat(osc_client)
+                    self.beat(osc_client, engine_client)
                 }
             }
         }
@@ -129,7 +130,7 @@ impl RandomValComponent {
         }
     }
 
-    fn beat(&mut self, osc_client: &OscUdpClient) {
+    fn beat(&mut self, osc_client: &OscUdpClient, engine_client: &OscUdpClient) {
         self.beat_counter = (self.beat_counter + 1) % self.beat_divisor;
         if self.beat_counter == 0 {
             self.value = (self.value + (random::<f32>() - 0.5) * self.delta);
@@ -144,7 +145,10 @@ impl RandomValComponent {
             self.num_label_msg(),
             self.rotary_msg(),
             self.div_label_msg(),
-        ])
+        ]);
+        self.send_messages(engine_client, vec![
+            self.engine_msg()
+        ]);
     }
 
     pub fn update_ui(&mut self, osc_client: &OscUdpClient) {
@@ -221,11 +225,12 @@ fn get_newest_message(osc_method: &mut OscMethod) -> Option<OscMessage> {
 /// Receive OSC messages
 pub fn random_val_receive(mut osc_clients: ResMut<OscClients>, mut query: Query<(&mut RandomValComponent, &mut OscMultiMethod), Changed<OscMultiMethod>>) {
     let mut touch_osc_client = &osc_clients.clients[0];
+    let mut engine_osc_client = &osc_clients.clients[1];
 
     for (mut rvc, mut omm) in query.iter_mut() {
         // Beat
         if let Some(_) = get_newest_message(&mut omm.methods[0]) {
-            rvc.on_beat(touch_osc_client)
+            rvc.on_beat(touch_osc_client, engine_osc_client)
         }
         // Rotary
         if let Some(msg) = get_newest_message(&mut omm.methods[1]) {
@@ -241,7 +246,7 @@ pub fn random_val_receive(mut osc_clients: ResMut<OscClients>, mut query: Query<
         }
         // Trigger beat
         if let Some(msg) = get_newest_message(&mut omm.methods[4]) {
-            rvc.on_trig_beat(touch_osc_client, msg)
+            rvc.on_trig_beat(touch_osc_client, engine_osc_client, msg)
         }
         // Decrement divisor
         if let Some(msg) = get_newest_message(&mut omm.methods[5]) {
