@@ -1,0 +1,9 @@
+{
+  "oscserveraddress": "0.0.0.0",
+  "oscserverport": 31338,
+  "oscclientaddress": "192.168.1.8",
+  "oscclientport": 31338,
+  "layerdefs" : [
+
+  ]
+}
