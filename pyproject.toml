@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
 PyreeEngine = { git = "https://github.com/DrLuke/PyreeEngine" }
+python-osc = "1.8.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -142,6 +142,14 @@ reference = "master"
 resolved_reference = "d129ada267aacba5c38c36614c16ddd883b5c8f5"
 
 [[package]]
+name = "python-osc"
+version = "1.8.0"
+description = "Open Sound Control server and client implementations in pure Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "python-rtmidi"
 version = "1.4.9"
 description = "A Python binding for the RtMidi C++ library implemented using Cython."
@@ -163,7 +171,7 @@ numpy = ">=1.16.5,<1.23.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "574af3cfb17d3f3e38da514519d0dbe1782c9269392f2313a1014698b9d3213a"
+content-hash = "206e9e24863114648b7fe4af69552cb6fd96d3689d6a58648c6ea1695340086d"
 
 [metadata.files]
 cffi = [
@@ -405,6 +413,10 @@ pyopengl = [
     {file = "PyOpenGL-3.1.6.tar.gz", hash = "sha256:8ea6c8773927eda7405bffc6f5bb93be81569a7b05c8cac50cd94e969dce5e27"},
 ]
 PyreeEngine = []
+python-osc = [
+    {file = "python-osc-1.8.0.tar.gz", hash = "sha256:2f8c187c68d239960fb2eddcb5346a62a9b35e64f2de045b3e5e509f475ca73d"},
+    {file = "python_osc-1.8.0-py3-none-any.whl", hash = "sha256:9e2abb2fc9ba2c356f8e951609a03c9c7017bf0bad82cca8490e9b8af9e92a0b"},
+]
 python-rtmidi = [
     {file = "python-rtmidi-1.4.9.tar.gz", hash = "sha256:bfeb4ed99d0cccf6fa2837566907652ded7adc1c03b69f2160c9de4082301302"},
     {file = "python_rtmidi-1.4.9-cp36-cp36m-macosx_10_6_intel.whl", hash = "sha256:8f7e154681c5d6ed7228ce8639708592da758ef4c0f575f7020854e07ca6478b"},
