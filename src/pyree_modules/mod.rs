@@ -4,9 +4,11 @@ use bevy::prelude::*;
 use bevy_osc::OscUdpClient;
 
 mod randomval;
+mod misc;
 
 use randomval::random_val_receive;
 use crate::OscClients;
+use crate::pyree_modules::misc::{beat_fwd_system, spawn_beat_forwarder};
 use crate::pyree_modules::randomval::{RandomValBundle, RandomValComponent};
 
 fn spawn_randomval(mut commands: Commands) {
@@ -32,9 +34,11 @@ pub fn pyree_system_set() -> SystemSet {
     SystemSet::new()
         .with_system(random_val_receive)
         .with_system(init_randomval_gui)
+        .with_system(beat_fwd_system)
 }
 
 pub fn pyree_startup_system_set() -> SystemSet {
     SystemSet::new()
         .with_system(spawn_randomval)
+        .with_system(spawn_beat_forwarder)
 }
