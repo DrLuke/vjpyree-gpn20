@@ -11,7 +11,7 @@ pycparser = "*"
 
 [[package]]
 name = "glfw"
-version = "2.5.2"
+version = "2.5.3"
 description = "A ctypes-based wrapper for GLFW3."
 category = "main"
 optional = false
@@ -164,7 +164,7 @@ scipy = "*"
 type = "git"
 url = "https://github.com/DrLuke/PyreeEngine"
 reference = "master"
-resolved_reference = "d129ada267aacba5c38c36614c16ddd883b5c8f5"
+resolved_reference = "61539f87c9b49499d0802e1bb465343f97cff69a"
 
 [[package]]
 name = "python-osc"
@@ -252,15 +252,15 @@ cffi = [
     {file = "cffi-1.15.0.tar.gz", hash = "sha256:920f0d66a896c2d99f0adbb391f990a84091179542c205fa53ce5787aff87954"},
 ]
 glfw = [
-    {file = "glfw-2.5.2-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-macosx_10_6_intel.whl", hash = "sha256:cae527850cda42cba93b23613ec95ecaac67b9c9e7d2677008a670e65337f0bd"},
-    {file = "glfw-2.5.2-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-macosx_11_0_arm64.whl", hash = "sha256:510b2db076a32ce019511721c3ad245bf679d9389a8e56f172ea45d4a7bf2267"},
-    {file = "glfw-2.5.2-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2010_i686.whl", hash = "sha256:12caae7bc02cea49731274abdf9532513886917e2cd9f271783cc5acd85f6d09"},
-    {file = "glfw-2.5.2-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2010_x86_64.whl", hash = "sha256:6b84393698573ff3ab3df2465664f690dd00860ca665ae4cc756898710cd219a"},
-    {file = "glfw-2.5.2-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2014_aarch64.whl", hash = "sha256:0a389260dbc154f6959b6032b52880407dfd5f7b4f29cedfd9e3014df12f765c"},
-    {file = "glfw-2.5.2-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2014_x86_64.whl", hash = "sha256:de4d317bd90a8d14cb46ab1a8d50f641fa6dd4638b498d91d7f1a57852e3b73f"},
-    {file = "glfw-2.5.2-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-win32.whl", hash = "sha256:b47e2ac8f537d2383825a342fe5e9eba2a25ecbc53c57626d8c00b4bfc6fe7ea"},
-    {file = "glfw-2.5.2-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-win_amd64.whl", hash = "sha256:6fefb8be5b47725d1d2a0c179b8119105e22fa2d2f6b0c010106565dca13977d"},
-    {file = "glfw-2.5.2.tar.gz", hash = "sha256:e463b4265bbde54fb26a02411c8b8a3c2f3452f4ef2cfce6b6500721f515b15e"},
+    {file = "glfw-2.5.3-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-macosx_10_6_intel.whl", hash = "sha256:797528a7e433c1684cad2807838824e73c0c1fd8e12b01ee0b22ad203f46bf87"},
+    {file = "glfw-2.5.3-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-macosx_11_0_arm64.whl", hash = "sha256:1763af8d00e1b1517fccceb768e5470ce754a993bd8020878dca444f9523726b"},
+    {file = "glfw-2.5.3-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2010_i686.whl", hash = "sha256:847cbe034f5e2b2f3bc02224e630972bf12ec7f8a1303d63bd6f3f722699be8f"},
+    {file = "glfw-2.5.3-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2010_x86_64.whl", hash = "sha256:5f0b185ec29b2e68df87b0ebe37841e50af72be78636c72f9c0298ef2b229676"},
+    {file = "glfw-2.5.3-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2014_aarch64.whl", hash = "sha256:1158fe9ebec38f5b0ae146d0c781491bb8ef41d1f59e626e707e0708f1865050"},
+    {file = "glfw-2.5.3-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2014_x86_64.whl", hash = "sha256:0ad3af6bc0d99a4bfee0de5176d8aee887b04b8e18af3fc90272b96e69464ef7"},
+    {file = "glfw-2.5.3-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-win32.whl", hash = "sha256:25945014ef3fba24ca11249f41018350857d459297ada5820e3553ed838af608"},
+    {file = "glfw-2.5.3-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-win_amd64.whl", hash = "sha256:fe9500b9e31847987a77e686569ad1470435688eaa5ebb87ea80cff2ff3300f3"},
+    {file = "glfw-2.5.3.tar.gz", hash = "sha256:02cf5e7523e867f5253d2df065cb4590250ce744ca2f8bfdcbad4a1727f1e0b5"},
 ]
 imageio = [
     {file = "imageio-2.16.1-py3-none-any.whl", hash = "sha256:d8d17c59b6f5f3b350bbbe346e7cb7dda0399b1881d93ad01cb29b5acdb24c42"},
