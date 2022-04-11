@@ -14,7 +14,7 @@ class LayerEntry(BaseEntry):
 
     def init(self):
         self.hotloadingshader = HotloadingShader(Path("assets/glsl/vert.glsl"),
-                                                 Path("assets/glsl/rd/frag.glsl"))
+                                                 Path("assets/glsl/frag.glsl"))
         self.simpleshader = SimpleShader(self.context)
         self.simpleshader.updateshader(self.hotloadingshader)
 
