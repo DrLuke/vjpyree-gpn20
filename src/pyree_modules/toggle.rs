@@ -9,6 +9,8 @@ pub struct ToggleComponent {
     value: f32,
 }
 
+#[derive(Bundle)]
+#[derive(Component)]
 pub struct ToggleBundle {
     toggle_component: ToggleComponent,
     osc_method: OscMethod,
@@ -52,7 +54,7 @@ fn get_newest_message(osc_method: &mut OscMethod) -> Option<OscMessage> {
     messages.pop()
 }
 
-pub fn toggle_system(osc_clients: ResMut<OscClients>, mut query: Query<(&mut ToggleComponent, &mut OscMethod), Changed<OscMethod>>) {
+pub fn toggle_system_receive(osc_clients: ResMut<OscClients>, mut query: Query<(&mut ToggleComponent, &mut OscMethod), Changed<OscMethod>>) {
     for (mut tc, mut om) in query.iter_mut() {
         if let Some(msg) = get_newest_message(&mut om) {
             if msg.args.len() == 1 {
@@ -61,5 +63,11 @@ pub fn toggle_system(osc_clients: ResMut<OscClients>, mut query: Query<(&mut Tog
                 }
             }
         }
+    }
+}
+
+pub fn init_toggle_gui_system(osc_client: ResMut<OscClients>, mut query: Query<&mut ToggleComponent, Added<ToggleComponent>>) {
+    for mut tc in query.iter_mut() {
+        tc.update_ui(&osc_client.clients[0]);
     }
 }

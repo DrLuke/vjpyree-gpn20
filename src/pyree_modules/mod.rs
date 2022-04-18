@@ -5,11 +5,13 @@ use bevy_osc::OscUdpClient;
 
 mod randomval;
 mod misc;
+mod toggle;
 
 use randomval::random_val_receive;
 use crate::OscClients;
 use crate::pyree_modules::misc::{beat_fwd_system, spawn_beat_forwarder};
 use crate::pyree_modules::randomval::{init_randomval_gui_system, RandomValBundle, RandomValComponent};
+use crate::pyree_modules::toggle::{init_toggle_gui_system, toggle_system_receive, ToggleBundle};
 
 fn spawn_randomval(mut commands: Commands) {
     commands.spawn_bundle(RandomValBundle::new(0, "test".to_string()));
@@ -24,16 +26,23 @@ fn spawn_randomval(mut commands: Commands) {
     commands.spawn_bundle(RandomValBundle::new(9, "test".to_string()));
 }
 
+fn spawn_toggle(mut commands: Commands) {
+    commands.spawn_bundle(ToggleBundle::new(0));
+}
+
 
 pub fn pyree_system_set() -> SystemSet {
     SystemSet::new()
         .with_system(random_val_receive)
+        .with_system(toggle_system_receive)
         .with_system(init_randomval_gui_system)
+        .with_system(init_toggle_gui_system)
         .with_system(beat_fwd_system)
 }
 
 pub fn pyree_startup_system_set() -> SystemSet {
     SystemSet::new()
         .with_system(spawn_randomval)
+        .with_system(spawn_toggle)
         .with_system(spawn_beat_forwarder)
 }
