@@ -262,3 +262,9 @@ pub fn random_val_receive(mut osc_clients: ResMut<OscClients>, mut query: Query<
         }
     }
 }
+
+pub fn init_randomval_gui_system(osc_client: ResMut<OscClients>, mut query: Query<&mut RandomValComponent, Added<RandomValComponent>>) {
+    for mut rvc in query.iter_mut() {
+        rvc.update_ui(&osc_client.clients[0]);
+    }
+}
