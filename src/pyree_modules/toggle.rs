@@ -7,6 +7,8 @@ use crate::OscClients;
 pub struct ToggleComponent {
     index: u32,
     value: f32,
+    toggle_prefix: String,
+    multi_index: u32,
 }
 
 #[derive(Bundle)]
@@ -17,20 +19,40 @@ pub struct ToggleBundle {
 }
 
 impl ToggleBundle {
-    pub fn new(index: u32) -> Self {
+    pub fn simple(index: u32) -> Self { Self::new(index, "toggle".to_string(), 0) }
+
+    pub fn new(index: u32, toggle_prefix: String, multi_index: u32) -> Self {
         ToggleBundle {
             toggle_component: ToggleComponent {
                 index,
                 value: 0.0,
+                toggle_prefix: toggle_prefix.clone(),
+                multi_index,
             },
-            osc_method: OscMethod::new(format!("/toggle/{}", index).as_str()).unwrap(),
+            osc_method: {
+                let method;
+                if toggle_prefix == "toggle" {
+                    // For single toggle
+                    method = OscMethod::new(format!("/toggle/{}", index).as_str()).unwrap();
+                } else {
+                    // For horizontal multitoggles
+                    method = OscMethod::new(format!("/{}/1/{}", toggle_prefix, multi_index + 1).as_str()).unwrap();
+                }
+                method
+            },
         }
     }
 }
 
 impl ToggleComponent {
     fn engine_msg(&self) -> OscMessage { OscMessage { addr: format!("/toggle/{}", self.index), args: vec![self.value.into()] } }
-    fn ui_msg(&self) -> OscMessage { self.engine_msg() }
+    fn ui_msg(&self) -> OscMessage {
+        return if self.toggle_prefix == "toggle" {
+            self.engine_msg()
+        } else {
+            OscMessage { addr: format!("/{}/1/{}", self.toggle_prefix, self.multi_index + 1), args: vec![self.value.into()] }
+        };
+    }
 
     /// osc client is pyree client
     pub fn update_val(&mut self, val: f32, osc_client: &OscUdpClient) {
@@ -39,7 +61,7 @@ impl ToggleComponent {
     }
 
     pub fn update_ui(&self, osc_client: &OscUdpClient) {
-        osc_client.send(&OscPacket::Message(self.engine_msg())).unwrap_or(());
+        osc_client.send(&OscPacket::Message(self.ui_msg())).unwrap_or(());
     }
 }
 
@@ -59,6 +81,7 @@ pub fn toggle_system_receive(osc_clients: ResMut<OscClients>, mut query: Query<(
         if let Some(msg) = get_newest_message(&mut om) {
             if msg.args.len() == 1 {
                 if let OscType::Float(val) = msg.args[0] {
+                    println!("{} {}", msg.addr, val);
                     tc.update_val(val, &osc_clients.clients[1])
                 }
             }

@@ -27,7 +27,10 @@ fn spawn_randomval(mut commands: Commands) {
 }
 
 fn spawn_toggle(mut commands: Commands) {
-    commands.spawn_bundle(ToggleBundle::new(0));
+    commands.spawn_bundle(ToggleBundle::simple(0));
+    for i in 0..5 {
+        commands.spawn_bundle(ToggleBundle::new(3+i, "testmulti".to_string(), i));
+    }
 }
 
 
