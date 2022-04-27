@@ -81,7 +81,6 @@ pub fn toggle_system_receive(osc_clients: ResMut<OscClients>, mut query: Query<(
         if let Some(msg) = get_newest_message(&mut om) {
             if msg.args.len() == 1 {
                 if let OscType::Float(val) = msg.args[0] {
-                    println!("{} {}", msg.addr, val);
                     tc.update_val(val, &osc_clients.clients[1])
                 }
             }
