@@ -59,14 +59,17 @@ impl RandomValComponent {
         self.beat(osc_client, engine_client);
     }
 
-    fn on_rotary(&mut self, osc_client: &OscUdpClient, osc_message: OscMessage) {
+    fn on_rotary(&mut self, osc_client: &OscUdpClient, engine_client: &OscUdpClient, osc_message: OscMessage) {
         if osc_message.args.len() == 1 {
             if let OscType::Float(val) = osc_message.args[0] {
                 self.value = val;
 
                 self.send_messages(osc_client, vec![
                     self.num_label_msg(),
-                ])
+                ]);
+                self.send_messages(engine_client, vec![
+                    self.engine_msg(),
+                ]);
             }
         }
     }
@@ -234,7 +237,7 @@ pub fn random_val_receive(mut osc_clients: ResMut<OscClients>, mut query: Query<
         }
         // Rotary
         if let Some(msg) = get_newest_message(&mut omm.methods[1]) {
-            rvc.on_rotary(touch_osc_client, msg)
+            rvc.on_rotary(touch_osc_client, engine_osc_client, msg)
         }
         // OnBeat toggle
         if let Some(msg) = get_newest_message(&mut omm.methods[2]) {
