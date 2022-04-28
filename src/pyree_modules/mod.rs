@@ -41,7 +41,10 @@ fn spawn_toggle(mut commands: Commands) {
 }
 
 fn spawn_button(mut commands: Commands) {
-    commands.spawn_bundle(ButtonBundle::simple(0));
+    // RD wipes
+    for i in 0..5 {
+        commands.spawn_bundle(ButtonBundle::new(i, "rdwipe".to_string(), i));
+    }
 }
 
 
