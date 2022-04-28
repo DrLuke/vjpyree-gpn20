@@ -340,7 +340,15 @@ vec4 wipe4(vec2 uv)
     return vec4(0, 0.6, 0, step(-0.01, -dist));
 }
 
-//uniform float pat;
+uniform float toggle0;
+uniform float toggle1;
+uniform float toggle2;
+uniform float toggle3;
+uniform float toggle4;
+
+uniform float randomVal0;
+uniform float randomVal1;
+uniform float randomVal2;
 
 // ######################
 void main()
@@ -353,40 +361,13 @@ void main()
     vec2 uv11a = uv11 * vec2(res.x/res.y, 1.);
 
     // Patterns
-    float pat = 4;
-    if (pat == 1) {colorOut = main1(uvIn);}
-    if (pat == 2) {colorOut = main2(uvIn);}
-    if (pat == 3) {colorOut = main3(uvIn);}
-    if (pat == 4) {colorOut = main4(uvIn);}
-    if (pat == 5) {colorOut = main5(uvIn);}
+    if (toggle0 == 1.) {colorOut = main1(uv);}
+    else if (toggle1 == 1.) {colorOut = main2(uv);}
+    else if (toggle2 == 1.) {colorOut = main3(uv);}
+    else if (toggle3 == 1.) {colorOut = main4(uv);}
+    else if (toggle4 == 1.) {colorOut = main5(uv);}
+    else {colorOut = main5(uvIn);}
 
-    // Wipes
-    vec4 wipe = wipe4(uvIn);
-    if(wipe1t >= 0.0) {
-        colorOut.r = mix(colorOut.r, wipe.r, wipe.b);
-        colorOut.g = mix(colorOut.g, wipe.g, wipe.a);
-    }
 
-    wipe = wipe4(uvIn);
-    if(wipe2t >= 0.0) {
-        colorOut.r = mix(colorOut.r, wipe.r, wipe.b);
-        colorOut.g = mix(colorOut.g, wipe.g, wipe.a);
-    }
-
-    wipe = wipe3(uvIn);
-    if(wipe3t >= 0.0) {
-        colorOut.r = mix(colorOut.r, wipe.r, wipe.b);
-        colorOut.g = mix(colorOut.g, wipe.g, wipe.a);
-    }
-
-    wipe = wipe4(uvIn);
-    if(wipe4t >= 0.0) {
-        colorOut.r = mix(colorOut.r, wipe.r, wipe.b);
-        colorOut.g = mix(colorOut.g, wipe.g, wipe.a);
-    }
-
-    //colorOut.rgb = vec3(wipe4t);
-    //colorOut.rg = uv;
-
-    //colorOut.rgb = vec3(1, 1 - smoothstep(0.2, 0.1, max(cos(abs(uvf.x)*30), cos(abs(uvf.y*30)))), 0);
+    //colorOut = vec4(uvIn, randomVal0, 0.);
 }
