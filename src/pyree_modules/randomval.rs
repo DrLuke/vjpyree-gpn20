@@ -22,10 +22,12 @@ pub struct RandomValComponent {
     delta: f32,
     // Wrap value if it crosses 0,1 range
     wrap: bool,
+    multi_index: u32,   // Offset for multipush index yadda yadda
+    multi_prefix: String,   // actually a postfix that is added to the multi-input names etc. but I was too lazy to refactor the field name
 }
 
 impl RandomValComponent {
-    pub fn new(index: u32, label: String) -> Self {
+    pub fn new(index: u32, label: String, multi_index: u32, multi_prefix: String) -> Self {
         Self {
             index,
             value: 0.0,
@@ -35,6 +37,8 @@ impl RandomValComponent {
             beat_divisor: 1,
             delta: 1.,
             wrap: true,
+            multi_index,
+            multi_prefix,
         }
     }
 
@@ -49,7 +53,7 @@ impl RandomValComponent {
         }
     }
     fn div_label_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/div_label{}", self.index), args: vec![format!("{: >3}  :  {: <3}", self.beat_counter + 1, self.beat_divisor).into()] } }
-    fn on_beat_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/on_beat/1/{}", self.index + 1), args: vec![(if self.on_beat { 1 } else { 0 }).into()] } }
+    fn on_beat_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/on_beat{}/1/{}", self.multi_prefix, self.index + 1 - self.multi_index), args: vec![(if self.on_beat { 1 } else { 0 }).into()] } }
     fn wrap_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/wrap{}", self.index), args: vec![(if self.on_beat { 1 } else { 0 }).into()] } }
     fn delta_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/delta{}", self.index), args: vec![self.delta.into()] } }
     fn engine_msg(&self) -> OscMessage { OscMessage { addr: format!("/randomval/{}", self.index), args: vec![self.value.into()] } }
@@ -181,14 +185,14 @@ impl RandomValComponent {
         }
     }
 
-    pub fn gen_osc_methods(index: u32) -> Vec<OscMethod> {
+    pub fn gen_osc_methods(&self, index: u32) -> Vec<OscMethod> {
         vec![
             OscMethod::new("/beat").unwrap(),
             OscMethod::new(format!("/randomval/rotary{}", index).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/on_beat/1/{}", index + 1).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/div/3/{}", index + 1).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/div/2/{}", index + 1).as_str()).unwrap(),
-            OscMethod::new(format!("/randomval/div/1/{}", index + 1).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/on_beat{}/1/{}", self.multi_prefix, index + 1 - self.multi_index).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/div{}/3/{}", self.multi_prefix, index + 1 - self.multi_index).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/div{}/2/{}", self.multi_prefix, index + 1 - self.multi_index).as_str()).unwrap(),
+            OscMethod::new(format!("/randomval/div{}/1/{}", self.multi_prefix, index + 1 - self.multi_index).as_str()).unwrap(),
             OscMethod::new(format!("/randomval/delta{}", index).as_str()).unwrap(),
             OscMethod::new(format!("/randomval/wrap{}", index).as_str()).unwrap(),
         ]
@@ -203,11 +207,13 @@ pub struct RandomValBundle {
 }
 
 impl RandomValBundle {
-    pub fn new(index: u32, label: String) -> Self {
+    pub fn new(index: u32, label: String, multi_index: u32, multi_prefix: String) -> Self {
+        let rvc = RandomValComponent::new(index, label, multi_index, multi_prefix);
+        let methods = rvc.gen_osc_methods(index);
         Self {
-            random_val: RandomValComponent::new(index, label),
+            random_val: rvc,
             osc_multi_method: OscMultiMethod {
-                methods: RandomValComponent::gen_osc_methods(index)
+                methods
             },
         }
     }
