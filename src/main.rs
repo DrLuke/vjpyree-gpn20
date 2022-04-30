@@ -28,7 +28,7 @@ pub struct OscClients {
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(MinimalPlugins)
 
         .insert_resource(OscUdpServer::new("0.0.0.0:31337").unwrap())
         .insert_resource(OscDispatcher::default())
