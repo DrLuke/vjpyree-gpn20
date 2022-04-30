@@ -95,6 +95,16 @@ float sdOctogon( in vec2 p, in float r )
     return length(p)*sign(p.y);
 }
 
+float sdEquilateralTriangle( in vec2 p )
+{
+    const float k = sqrt(3.0);
+    p.x = abs(p.x) - 1.0;
+    p.y = p.y + 1.0/k;
+    if( p.x+k*p.y>0.0 ) p = vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;
+    p.x -= clamp( p.x, -2.0, 0.0 );
+    return -length(p)*sign(p.y);
+}
+
 const float scale[5] = float[5](0.2, 0.8, 1.0, 0.8, 0.2);
 vec4 laplace(vec2 fragCoord)
 {
@@ -265,79 +275,76 @@ vec4 main6(vec2 uv)
 }
 
 // ###################### WIPES
-uniform float wipe1t;
-uniform float wipe2t;
-uniform float wipe3t;
-uniform float wipe4t;
-uniform float wipe5t;
 
-uniform float wipe1freq;
-vec4 wipe1(vec2 uv)
+uniform float wipe0;
+uniform float wipe1;
+uniform float wipe2;
+uniform float wipe3;
+uniform float wipe4;
+
+const float wipethiccnes = 0.03;
+
+//uniform float wipesteps; // TODO
+const float wipesteps = 5.;
+
+vec4 wipe0f(vec2 uv)
 {
-    vec2 uvf = ((uv - vec2(0.5))*2);
-    uvf *= vec2(res.x/res.y, 1.);
-
-    return vec4(0.0, sin(length(uvf)*wipe1freq*3.14159*2.)*0.6, 0, 0.01);
-}
-
-uniform vec2 uboxpos2;
-uniform vec2 uboxsize2;
-uniform float wipe2rot;
-vec4 wipe2(vec2 uv)
-{
-    vec2 uvc = (uv - vec2(0.5))*rot2(wipe2rot*3.14159*2.);
+    vec2 uvc = (uv - vec2(0.5))*2;
     uvc *= vec2(res.x/res.y, 1.);
 
-    vec2 boxpos = uboxpos2 / res;
-    vec2 boxsize = uboxsize2 / res;
+    float dist = 9999;
+    float size = discretize(wipe0, wipesteps);
+    dist = abs(sdEquilateralTriangle(uvc/(0.25 + size))) - 0.0001;
 
-    #define BOXFEATHER 0.001
-    float box = smoothstep(-boxsize.x/2 - BOXFEATHER, -boxsize.x/2 + BOXFEATHER, uvc.x-boxpos.x) *
-                smoothstep(+boxsize.x/2 + BOXFEATHER, +boxsize.x/2 - BOXFEATHER, uvc.x-boxpos.x) *
-                smoothstep(-boxsize.y/2 - BOXFEATHER, -boxsize.y/2 + BOXFEATHER, uvc.y-boxpos.y) *
-                smoothstep(+boxsize.y/2 + BOXFEATHER, +boxsize.y/2 - BOXFEATHER, uvc.y-boxpos.y);
-
-    return vec4(0, 0.6, 0, box);
+    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
 }
 
-uniform vec2 uboxpos3;
-uniform vec2 uboxsize3;
-uniform float wipe3rot;
-vec4 wipe3(vec2 uv)
-{
-
-
-    vec2 boxpos = uboxpos3 / res;
-    vec2 boxsize = uboxsize3 / res;
-
-    vec2 uvc = (uv - vec2(0.5))*rot2(wipe3rot*3.14159*2.);
-    uvc *= vec2(res.y/res.x, 1.);
-    uvc = mod(uvc + vec2(boxsize.x, 500), vec2(boxsize.x*2, 1000)) - vec2(boxsize.x, 500);
-
-    #define BOXFEATHER 0.001
-    float box = smoothstep(-boxsize.x/2 - BOXFEATHER, -boxsize.x/2 + BOXFEATHER, uvc.x-boxpos.x) *
-                smoothstep(+boxsize.x/2 + BOXFEATHER, +boxsize.x/2 - BOXFEATHER, uvc.x-boxpos.x) *
-                smoothstep(-boxsize.y/2 - BOXFEATHER, -boxsize.y/2 + BOXFEATHER, uvc.y-boxpos.y) *
-                smoothstep(+boxsize.y/2 + BOXFEATHER, +boxsize.y/2 - BOXFEATHER, uvc.y-boxpos.y);
-
-    return vec4(0, 0.6, 0, box);
-}
-
-uniform float wipe4shape;
-uniform float wipe4steps;
-vec4 wipe4(vec2 uv)
+vec4 wipe1f(vec2 uv)
 {
     vec2 uvc = (uv - vec2(0.5))*2;
     uvc *= vec2(res.x/res.y, 1.);
 
     float dist = 9999;
 
-    if(wipe4shape == 1) { dist = abs(sdOctogon(uvc, discretize(wipe4t, wipe4steps))) - 0.0001; }
-    if(wipe4shape == 2) { dist = abs(sdCross(uvc, vec2(discretize(wipe4t, wipe4steps)), 0.) - 0.0001); }
-    if(wipe4shape == 3) { dist = abs(sdCross(uvc, vec2(discretize(wipe4t, wipe4steps), discretize(wipe4t, wipe4steps)*0.3), 0.1) - 0.0001); }
-    if(wipe4shape == 4) { dist = abs(sdCircle(uvc, discretize(wipe4t, wipe4steps))) - 0.0001; }
+    dist = abs(sdOctogon(uvc, discretize(wipe1, wipesteps))) - 0.0001;
 
-    return vec4(0, 0.6, 0, step(-0.01, -dist));
+    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
+}
+
+vec4 wipe2f(vec2 uv)
+{
+    vec2 uvc = (uv - vec2(0.5))*2;
+    uvc *= vec2(res.x/res.y, 1.);
+
+    float dist = 9999;
+
+    dist = abs(sdCross(uvc, vec2(discretize(wipe2, wipesteps)), 0.) - 0.0001);
+
+    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
+}
+
+vec4 wipe3f(vec2 uv)
+{
+    vec2 uvc = (uv - vec2(0.5))*2;
+    uvc *= vec2(res.x/res.y, 1.);
+
+    float dist = 9999;
+
+    dist = abs(sdCross(uvc, vec2(discretize(wipe3, wipesteps), discretize(wipe3, wipesteps)*0.3), 0.1) - 0.0001);
+
+    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
+}
+
+vec4 wipe4f(vec2 uv)
+{
+    vec2 uvc = (uv - vec2(0.5))*2;
+    uvc *= vec2(res.x/res.y, 1.);
+
+    float dist = 9999;
+
+    dist = abs(sdCircle(uvc, discretize(wipe4, wipesteps))) - 0.0001;
+
+    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
 }
 
 uniform float toggle0;
@@ -368,6 +375,11 @@ void main()
     else if (toggle4 == 1.) {colorOut = main5(uv);}
     else {colorOut = main5(uvIn);}
 
+    if(wipe0 > 0.) { colorOut.rg = mix(colorOut.rg, wipe0f(uv).rg, wipe0f(uv).a); }
+    if(wipe1 > 0.) { colorOut.rg = mix(colorOut.rg, wipe1f(uv).rg, wipe1f(uv).a); }
+    if(wipe2 > 0.) { colorOut.rg = mix(colorOut.rg, wipe2f(uv).rg, wipe2f(uv).a); }
+    if(wipe3 > 0.) { colorOut.rg = mix(colorOut.rg, wipe3f(uv).rg, wipe3f(uv).a); }
+    if(wipe4 > 0.) { colorOut.rg = mix(colorOut.rg, wipe4f(uv).rg, wipe4f(uv).a); }
 
     //colorOut = vec4(uvIn, randomVal0, 0.);
 }
