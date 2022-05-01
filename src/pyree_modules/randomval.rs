@@ -4,6 +4,7 @@ use bevy_osc::{OscMethod, OscMultiMethod, OscUdpClient};
 use rand::prelude::random;
 use rosc::{OscBundle, OscMessage, OscPacket, OscTime, OscType};
 use crate::OscClients;
+use crate::pyree_modules::misc::BeatMuted;
 
 /// Generates a random value on every beat
 #[derive(Component)]
@@ -22,7 +23,8 @@ pub struct RandomValComponent {
     delta: f32,
     // Wrap value if it crosses 0,1 range
     wrap: bool,
-    multi_index: u32,   // Offset for multipush index yadda yadda
+    multi_index: u32,
+    // Offset for multipush index yadda yadda
     multi_prefix: String,   // actually a postfix that is added to the multi-input names etc. but I was too lazy to refactor the field name
 }
 
@@ -232,14 +234,16 @@ fn get_newest_message(osc_method: &mut OscMethod) -> Option<OscMessage> {
 }
 
 /// Receive OSC messages
-pub fn random_val_receive(mut osc_clients: ResMut<OscClients>, mut query: Query<(&mut RandomValComponent, &mut OscMultiMethod), Changed<OscMultiMethod>>) {
+pub fn random_val_receive(mut osc_clients: ResMut<OscClients>, mut query: Query<(&mut RandomValComponent, &mut OscMultiMethod), Changed<OscMultiMethod>>, beat_muted: ResMut<BeatMuted>) {
     let mut touch_osc_client = &osc_clients.clients[0];
     let mut engine_osc_client = &osc_clients.clients[1];
 
     for (mut rvc, mut omm) in query.iter_mut() {
         // Beat
         if let Some(_) = get_newest_message(&mut omm.methods[0]) {
-            rvc.on_beat(touch_osc_client, engine_osc_client)
+            if !beat_muted.0 {
+                rvc.on_beat(touch_osc_client, engine_osc_client)
+            }
         }
         // Rotary
         if let Some(msg) = get_newest_message(&mut omm.methods[1]) {
