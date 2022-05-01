@@ -29,8 +29,8 @@ fn spawn_randomval(mut commands: Commands) {
     commands.spawn_bundle(RandomValBundle::new(9, "test".to_string(), 0, "".to_string()));
 
     // RD random params
-    commands.spawn_bundle(RandomValBundle::new(10, "test".to_string(), 10, "rd".to_string()));
-    commands.spawn_bundle(RandomValBundle::new(11, "test".to_string(), 10, "rd".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(10, "Wipesteps".to_string(), 10, "rd".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(11, "thiccness".to_string(), 10, "rd".to_string()));
     commands.spawn_bundle(RandomValBundle::new(12, "test".to_string(), 10, "rd".to_string()));
     commands.spawn_bundle(RandomValBundle::new(13, "test".to_string(), 10, "rd".to_string()));
 }

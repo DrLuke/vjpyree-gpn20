@@ -276,16 +276,19 @@ vec4 main6(vec2 uv)
 
 // ###################### WIPES
 
+uniform float randomVal10;
+uniform float randomVal11;
+uniform float randomVal12;
+uniform float randomVal13;
+
 uniform float wipe0;
 uniform float wipe1;
 uniform float wipe2;
 uniform float wipe3;
 uniform float wipe4;
 
-const float wipethiccnes = 0.03;
-
-//uniform float wipesteps; // TODO
-const float wipesteps = 5.;
+#define WIPESTEPS (randomVal10*9+1)
+#define WIPETHICCNESS (0.01 + randomVal11*0.04)
 
 vec4 wipe0f(vec2 uv)
 {
@@ -293,10 +296,10 @@ vec4 wipe0f(vec2 uv)
     uvc *= vec2(res.x/res.y, 1.);
 
     float dist = 9999;
-    float size = discretize(wipe0, wipesteps);
+    float size = discretize(wipe0, WIPESTEPS);
     dist = abs(sdEquilateralTriangle(uvc/(0.25 + size))) - 0.0001;
 
-    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
+    return vec4(0, 0.6, 0, step(-WIPETHICCNESS, -dist));
 }
 
 vec4 wipe1f(vec2 uv)
@@ -306,9 +309,9 @@ vec4 wipe1f(vec2 uv)
 
     float dist = 9999;
 
-    dist = abs(sdOctogon(uvc, discretize(wipe1, wipesteps))) - 0.0001;
+    dist = abs(sdOctogon(uvc, discretize(wipe1, WIPESTEPS))) - 0.0001;
 
-    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
+    return vec4(0, 0.6, 0, step(-WIPETHICCNESS, -dist));
 }
 
 vec4 wipe2f(vec2 uv)
@@ -318,9 +321,9 @@ vec4 wipe2f(vec2 uv)
 
     float dist = 9999;
 
-    dist = abs(sdCross(uvc, vec2(discretize(wipe2, wipesteps)), 0.) - 0.0001);
+    dist = abs(sdCross(uvc, vec2(discretize(wipe2, WIPESTEPS)), 0.) - 0.0001);
 
-    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
+    return vec4(0, 0.6, 0, step(-WIPETHICCNESS, -dist));
 }
 
 vec4 wipe3f(vec2 uv)
@@ -330,9 +333,9 @@ vec4 wipe3f(vec2 uv)
 
     float dist = 9999;
 
-    dist = abs(sdCross(uvc, vec2(discretize(wipe3, wipesteps), discretize(wipe3, wipesteps)*0.3), 0.1) - 0.0001);
+    dist = abs(sdCross(uvc, vec2(discretize(wipe3, WIPESTEPS), discretize(wipe3, WIPESTEPS)*0.3), 0.1) - 0.0001);
 
-    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
+    return vec4(0, 0.6, 0, step(-WIPETHICCNESS, -dist));
 }
 
 vec4 wipe4f(vec2 uv)
@@ -342,9 +345,9 @@ vec4 wipe4f(vec2 uv)
 
     float dist = 9999;
 
-    dist = abs(sdCircle(uvc, discretize(wipe4, wipesteps))) - 0.0001;
+    dist = abs(sdCircle(uvc, discretize(wipe4, WIPESTEPS))) - 0.0001;
 
-    return vec4(0, 0.6, 0, step(-wipethiccnes, -dist));
+    return vec4(0, 0.6, 0, step(-WIPETHICCNESS, -dist));
 }
 
 uniform float toggle0;
@@ -352,10 +355,6 @@ uniform float toggle1;
 uniform float toggle2;
 uniform float toggle3;
 uniform float toggle4;
-
-uniform float randomVal0;
-uniform float randomVal1;
-uniform float randomVal2;
 
 // ######################
 void main()

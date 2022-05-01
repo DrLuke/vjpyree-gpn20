@@ -15,8 +15,8 @@ class LayerEntry(BaseEntry):
         self.simpleshader = None
 
         self.randomval = []
-        for i in range(10):
-            self.randomval.append(OscRandomVal(i, self.context))
+        for i in range(4):
+            self.randomval.append(OscRandomVal(i+10, self.context))
 
         self.toggles = []
         for i in range(5):
@@ -45,9 +45,8 @@ class LayerEntry(BaseEntry):
 
         uniforms = {
         }
-        for i in range(10):
-            uniforms.update(self.randomval[i]())
-
+        for rv in self.randomval:
+            uniforms.update(rv())
         for toggle in self.toggles:
             uniforms.update(toggle())
         for i in range(5):
