@@ -1,9 +1,28 @@
 {
   "oscserveraddress": "0.0.0.0",
   "oscserverport": 31338,
-  "oscclientaddress": "192.168.1.8",
+  "oscclientaddress": "192.168.0.37",
   "oscclientport": 31338,
-  "layerdefs" : [
-
+  "layerdefs": [
+    {
+      "module": "layermods.sequencer",
+      "name": "Sequencer",
+      "sortkey": 1
+    },
+    {
+      "module": "layermods.reaction_diffusion",
+      "name": "Reaction Diffusion",
+      "sortkey": 100
+    },
+    {
+      "module": "layermods.post",
+      "name": "Post Processing",
+      "sortkey": 200
+    },
+    {
+      "module": "layermods.screen",
+      "name": "Screen",
+      "sortkey": 300
+    }
   ]
 }

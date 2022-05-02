@@ -72,6 +72,9 @@ layout(binding=1) uniform sampler2D rdtex;
 layout (location = 0) out vec4 colorOut;
 
 
+uniform float beat;
+uniform float beataccum;
+
 void main()
 {
     vec4 prev = texture(prevtex, uvIn);
