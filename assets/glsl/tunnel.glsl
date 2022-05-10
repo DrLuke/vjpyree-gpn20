@@ -71,6 +71,20 @@ vec3 rgb2hsv(vec3 c)
 uniform vec2 res;
 uniform float time;
 
+uniform float toggle5;
+uniform float toggle6;
+uniform float toggle7;
+uniform float toggle8;
+uniform float toggle9;
+
+//uniform float randomVal20;// Mask speed
+uniform float accumtime;
+uniform float randomVal21;// Phase offset
+uniform float randomVal22;// Mask Frequency
+uniform float randomVal23;// Length
+
+uniform float beataccum;
+
 void main()
 {
     // Centered UV
@@ -78,17 +92,40 @@ void main()
     vec4 prev = texture(prevtex, uvIn);
 
     // MATH to tunnelize uv coordinates
+    float a = atan(uv.y, uv.x)/(3.14159*2.);
+    float r = 1. / length(uv);
     vec2 st = vec2(
-        atan(uv.y, uv.x)/(3.14159) - time*0.13,
-        1. / length(uv) - time*0.2
+    a,
+    r
     );
 
-    // Render tunnel
+    // Control parameters from random vals
+    float t = accumtime - randomVal21 * 3.14159 * 2.;
+    float freq = discretize(randomVal22*10, 1.) + 1;
+
+    // Generate masks
     colorOut = vec4(0);
-    colorOut.rgb = rot3(vec3(1), st.y)*texture(prevtex, mod(st, 1.) + prev.xy*0.06).rgb*0.9;
-    colorOut.xy += 0.1* mod(st, 2.) * length(uv);
+    if (toggle5 == 1.) {
+        // Spiral scrolling
+        colorOut.b += smoothstep(0.75, 0.8, sin(st.x*3.14159*2.*freq - t + st.y*3.*randomVal23));
+    }
+    if (toggle6 == 1.) {
+        // Spiral static
+        colorOut.b += smoothstep(0.7, 0.8, sin(st.x*3.14159*2.*freq + st.y*3.*randomVal23));
+    }
+    if (toggle7 == 1.) {
+        // Rings scrolling
+        colorOut.b += smoothstep(0.7, 0.8, sin(st.y*3. - t));
+    }
+    if (toggle8 == 1.) {
+        // Rings static
+        colorOut.b += smoothstep(0.7, 0.8, sin(st.y*3.));
+    }
+    if (toggle9 == 1.) {
+        // Dots
+        colorOut.b += smoothstep(0.85, 0.95, sin(st.x*3.14159*-2.*freq - t) * sin(st.y*3.14159*2. - t));
+    }
 
-    // colorOut *= 1/st.y;
-
-    //colorOut = vec4(1);
+    // Render tunnel UV coordinates
+    colorOut.rg = mod(st, 1.);
 }

@@ -15,6 +15,11 @@
       "sortkey": 100
     },
     {
+      "module": "layermods.tunnel",
+      "name": "Tunnel",
+      "sortkey": 101
+    },
+    {
       "module": "layermods.post",
       "name": "Post Processing",
       "sortkey": 200
