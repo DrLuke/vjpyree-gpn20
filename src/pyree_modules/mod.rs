@@ -48,9 +48,9 @@ fn spawn_toggle(mut commands: Commands) {
         commands.spawn_bundle(ToggleBundle::new(i, "rdpat".to_string(), i));
     }
 
-    /*for i in 0..5 {
-        commands.spawn_bundle(ToggleBundle::new(3+i, "testmulti".to_string(), i));
-    }*/
+    for i in 0..5 {
+        commands.spawn_bundle(ToggleBundle::new(i+5, "tunpat".to_string(), i));
+    }
 }
 
 fn spawn_button(mut commands: Commands) {
