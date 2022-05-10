@@ -3,6 +3,9 @@ layout (location = 0) in vec3 posIn;
 layout (location = 1) in vec2 uvIn;
 layout (location = 2) in vec3 normIn;
 
+layout(binding=0) uniform sampler2D prevtex;
+
+layout (location = 0) out vec4 colorOut;
 
 // UTILITIES
 vec2 cexp(vec2 z)
@@ -64,34 +67,28 @@ vec3 rgb2hsv(vec3 c)
     return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-// -----------------------------------------------------
 
-layout(binding=0) uniform sampler2D prevtex;
-layout(binding=1) uniform sampler2D rdtex;
-layout(binding=2) uniform sampler2D tunnel;
-
-layout (location = 0) out vec4 colorOut;
-
-
-uniform float beat;
-uniform float beataccum;
+uniform vec2 res;
+uniform float time;
 
 void main()
 {
+    // Centered UV
+    vec2 uv = (gl_FragCoord.xy - res.xy*0.5) / res.y;
     vec4 prev = texture(prevtex, uvIn);
-    prev = texture(prevtex, uvIn-(prev.rg-0.3)*0.02);
-    vec4 rd = texture(rdtex, uvIn);
 
-    // RD masks
-    float rdMask1 = smoothstep(0.2, 0.5, rd.g);
-    float rdMask2 = smoothstep(0.2, 0.7, rd.b);
+    // MATH to tunnelize uv coordinates
+    vec2 st = vec2(
+        atan(uv.y, uv.x)/(3.14159) - time*0.13,
+        1. / length(uv) - time*0.2
+    );
 
+    // Render tunnel
+    colorOut = vec4(0);
+    colorOut.rgb = rot3(vec3(1), st.y)*texture(prevtex, mod(st, 1.) + prev.xy*0.06).rgb*0.9;
+    colorOut.xy += 0.1* mod(st, 2.) * length(uv);
 
-    colorOut.rgb = vec3(rdMask1);
+    // colorOut *= 1/st.y;
 
-    colorOut.rgb = mix(rd.rgb*rot3(vec3(1), rd.g), prev.rgb*rot3(vec3(1), 0.15), 1.-rdMask1);
-
-    //colorOut.rgb = vec3(1.-rd.r, 0, rd.g);
-
-    colorOut = texture(tunnel, uvIn);
+    //colorOut = vec4(1);
 }

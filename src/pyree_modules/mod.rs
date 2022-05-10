@@ -33,6 +33,12 @@ fn spawn_randomval(mut commands: Commands) {
     commands.spawn_bundle(RandomValBundle::new(11, "thiccness".to_string(), 10, "rd".to_string()));
     commands.spawn_bundle(RandomValBundle::new(12, "test".to_string(), 10, "rd".to_string()));
     commands.spawn_bundle(RandomValBundle::new(13, "test".to_string(), 10, "rd".to_string()));
+
+    // Tunnel random params
+    commands.spawn_bundle(RandomValBundle::new(20, "-".to_string(), 20, "tu".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(21, "-".to_string(), 20, "tu".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(22, "-".to_string(), 20, "tu".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(23, "-".to_string(), 20, "tu".to_string()));
 }
 
 fn spawn_toggle(mut commands: Commands) {
