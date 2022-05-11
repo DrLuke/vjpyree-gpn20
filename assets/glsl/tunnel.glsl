@@ -127,5 +127,5 @@ void main()
     }
 
     // Render tunnel UV coordinates
-    colorOut.rg = mod(st, 1.);
+    colorOut.rg = st;
 }
