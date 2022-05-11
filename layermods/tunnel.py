@@ -44,7 +44,9 @@ class LayerEntry(BaseEntry):
 
         uniforms = {
             "time": self.context.time,
-            "beataccum": self.context.data["beataccum"]
+            "beataccum": self.context.data["beataccum"],
+            "beatpt1": self.context.data["beatpt1"],
+            "beataccumpt1": self.context.data["beataccumpt1"]
         }
         for toggle in self.toggles:
             uniforms.update(toggle())

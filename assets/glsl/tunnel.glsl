@@ -84,6 +84,8 @@ uniform float randomVal22;// Mask Frequency
 uniform float randomVal23;// Length
 
 uniform float beataccum;
+uniform float beataccumpt1;
+uniform float beatpt1;
 
 void main()
 {
