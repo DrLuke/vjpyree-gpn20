@@ -3,7 +3,8 @@ from pathlib import Path
 from PyreeEngine.layers import BaseEntry
 from PyreeEngine.shaders import HotloadingShader
 from PyreeEngine.simpleshader import SimpleShader
-from pyutil.osccontrols import OscRandomVal
+from pyutil.osccontrols import OscRandomVal, OscToggle
+
 
 class LayerEntry(BaseEntry):
     def __init__(self, context):
@@ -11,6 +12,12 @@ class LayerEntry(BaseEntry):
 
         self.hotloadingshader = None
         self.simpleshader = None
+
+        self.toggles = []
+        for i in range(6):
+            self.toggles.append(OscToggle(i+10, self.context))
+        for i in range(6):
+            self.toggles.append(OscToggle(i+20, self.context))
 
     def init(self):
         self.hotloadingshader = HotloadingShader(Path("assets/glsl/vert.glsl"),
@@ -36,6 +43,8 @@ class LayerEntry(BaseEntry):
             "beat": self.context.data["beat"],
             "beataccum": self.context.data["beataccum"]
         }
+        for toggle in self.toggles:
+            uniforms.update(toggle())
         for k, v in uniforms.items():
             self.simpleshader.setuniform(k, v)
 

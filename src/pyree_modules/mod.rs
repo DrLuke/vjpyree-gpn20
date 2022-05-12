@@ -51,6 +51,15 @@ fn spawn_toggle(mut commands: Commands) {
     for i in 0..5 {
         commands.spawn_bundle(ToggleBundle::new(i+5, "tunpat".to_string(), i));
     }
+
+    // Post pixel seed select
+    for i in 0..6 {
+        commands.spawn_bundle(ToggleBundle::new(i+10, "postseed".to_string(), i));
+    }
+    // Post feedback select
+    for i in 0..6 {
+        commands.spawn_bundle(ToggleBundle::new(i+20, "postfb".to_string(), i));
+    }
 }
 
 fn spawn_button(mut commands: Commands) {
