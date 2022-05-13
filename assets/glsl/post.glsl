@@ -103,6 +103,8 @@ uniform float toggle25;
 uniform float beat;
 uniform float beataccum;
 
+#define PAL1 vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,1.0),vec3(0.0,0.33,0.67)
+
 void main()
 {
     // coordinate systems
@@ -112,26 +114,42 @@ void main()
     // Seed selector
     vec4 seed = vec4(0);
     if (toggle10 == 1.) {
+        // Tunnel 1 with borders
         vec3 tun = texture(tunneltex, uvIn).xyz;
-        seed.rgb = pal( tun.r + tun.g + tun.b, vec3(0.8,0.5,0.4),vec3(0.2,0.4,0.2),vec3(2.0,1.0,1.0),vec3(0.0,0.25,0.25) );
+        seed.rgb = pal( tun.r + tun.g + tun.b, PAL1 );
         seed.a = tun.b;
     } else if (toggle11 == 1.) {
-
+        // Tunnel 2 no borders
+        vec3 tun = texture(tunneltex, uvIn).xyz;
+        seed.rgb = pal( tun.r + tun.g, PAL1 );
+        seed.a = tun.b;
     } else if (toggle12 == 1.) {
-
+        // Simple RD
+        vec4 rd = texture(rdtex, uvIn);
+        seed.rgb = pal(length(rd.gb), PAL1 );
+        seed.a = smoothstep(0.,0.5, rd.b+rd.a);
     } else if (toggle13 == 1.) {
-
+        // Double RD
+        vec4 rd = texture(rdtex, uvIn*2);
+        seed.rgb = pal(length(rd.gb), PAL1 );
+        seed.a = smoothstep(0.,0.5, rd.b+rd.a);
     } else if (toggle14 == 1.) {
-
+        vec3 tun = texture(tunneltex, uvIn).xyz;
+        vec4 rd = texture(rdtex, tun.rg*vec2(4,0.5));
+        seed.rgb = pal(length(rd.gb), PAL1 );
+        seed.a = smoothstep(0.,0.5, tun.b * (rd.b+rd.a) * (1-smoothstep(5., 20., tun.y)));
     } else if (toggle15 == 1.) {
-
+        vec3 tun = texture(tunneltex, uvIn).xyz;
+        vec4 rd = texture(rdtex, tun.rg*vec2(4,0.5));
+        seed.rgb = pal(length(rd.gb), PAL1 );
+        seed.a = smoothstep(0.,0.5, rd.b+rd.a) * (1-smoothstep(5., 20., tun.y));
     }
 
     // Feedback selector
     vec4 feedback = vec4(0);
     vec4 prev = texture(prevtex, uvIn);
     if (toggle20 == 1.) {
-        feedback = texture(prevtex, texture(tunneltex, uvIn).rg);
+        //feedback = texture(prevtex, texture(tunneltex, uvIn).rg);
     } else if (toggle21 == 1.) {
         feedback.rgb = texture(prevtex, uvIn + uvc*rot2(atan(prev.g, prev.r))*0.003).rgb*rot3(vec3(prev.rgb), length(uvIn-0.5)*length(prev))*0.999;
     } else if (toggle22 == 1.) {
