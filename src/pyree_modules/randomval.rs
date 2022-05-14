@@ -197,6 +197,7 @@ impl RandomValComponent {
             OscMethod::new(format!("/randomval/div{}/1/{}", self.multi_prefix, index + 1 - self.multi_index).as_str()).unwrap(),
             OscMethod::new(format!("/randomval/delta{}", index).as_str()).unwrap(),
             OscMethod::new(format!("/randomval/wrap{}", index).as_str()).unwrap(),
+            OscMethod::new("/updateui").unwrap(),
         ]
     }
 }
@@ -272,6 +273,10 @@ pub fn random_val_receive(mut osc_clients: ResMut<OscClients>, mut query: Query<
         // OnBeat toggle
         if let Some(msg) = get_newest_message(&mut omm.methods[7]) {
             rvc.on_wrap(touch_osc_client, msg)
+        }
+        // Update UI
+        if let Some(msg) = get_newest_message(&mut omm.methods[8]) {
+            rvc.update_ui(touch_osc_client);
         }
     }
 }
