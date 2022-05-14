@@ -10,7 +10,7 @@ mod button;
 
 use randomval::random_val_receive;
 use crate::OscClients;
-use crate::pyree_modules::misc::{beat_fwd_system, beat_mute_system, spawn_beat_forwarder};
+use crate::pyree_modules::misc::{beat_fwd_system, beat_mute_system, spawn_beat_forwarder, traktor_system};
 use crate::pyree_modules::randomval::{init_randomval_gui_system, RandomValBundle, RandomValComponent};
 use crate::pyree_modules::toggle::{init_toggle_gui_system, toggle_system_receive, ToggleBundle};
 use crate::pyree_modules::button::{button_system_receive, ButtonBundle};
@@ -79,6 +79,7 @@ pub fn pyree_system_set() -> SystemSet {
         .with_system(init_toggle_gui_system)
         .with_system(beat_fwd_system)
         .with_system(beat_mute_system)
+        .with_system(traktor_system)
 }
 
 pub fn pyree_startup_system_set() -> SystemSet {
