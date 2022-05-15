@@ -38,6 +38,8 @@ fn main() {
                 OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([192, 168, 0, 37]), 31337).into()).unwrap(),
                 // Pyree Engine
                 OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([127, 0, 0, 1]), 31338).into()).unwrap(),
+                // Loopback
+                OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([127, 0, 0, 1]), 31337).into()).unwrap(),
             ]
         })
         .add_system(receive_packets)

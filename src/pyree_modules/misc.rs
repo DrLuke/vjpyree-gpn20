@@ -1,6 +1,6 @@
 use bevy::ecs::system::Command;
 use bevy::prelude::*;
-use bevy_osc::{OscMethod, OscUdpClient};
+use bevy_osc::{OscDispatcher, OscMethod, OscUdpClient, OscMultiMethod};
 use rosc::{OscMessage, OscPacket, OscType};
 use crate::OscClients;
 
@@ -88,7 +88,7 @@ pub fn traktor_system(osc_clients: ResMut<OscClients>, mut query: Query<(&mut Tr
         // Count up to 24, send beat on 0, reset beat indicator on 12
         traktor.count = traktor.count.rem_euclid(24);
         if traktor.count == 0 {
-            osc_clients.clients[0].send(&OscPacket::Message(OscMessage { addr: "/beat".to_string(), args: vec![] })).unwrap_or(());
+            osc_clients.clients[2].send(&OscPacket::Message(OscMessage { addr: "/beat".to_string(), args: vec![] })).unwrap_or(());
             osc_clients.clients[0].send(&OscPacket::Message(OscMessage { addr: "/beat/led".to_string(), args: vec![(0.1).into()] })).unwrap_or(());
         }
         if traktor.count == 12 {
