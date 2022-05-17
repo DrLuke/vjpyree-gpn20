@@ -134,11 +134,13 @@ void main()
         seed.rgb = pal(length(rd.gb), PAL1 );
         seed.a = smoothstep(0.,0.5, rd.b+rd.a);
     } else if (toggle14 == 1.) {
+        // RD on tunnel, masked
         vec3 tun = texture(tunneltex, uvIn).xyz;
         vec4 rd = texture(rdtex, tun.rg*vec2(4,0.5));
         seed.rgb = pal(length(rd.gb), PAL1 );
         seed.a = smoothstep(0.,0.5, tun.b * (rd.b+rd.a) * (1-smoothstep(5., 20., tun.y)));
     } else if (toggle15 == 1.) {
+        // RD on tunnel, unmasked
         vec3 tun = texture(tunneltex, uvIn).xyz;
         vec4 rd = texture(rdtex, tun.rg*vec2(4,0.5));
         seed.rgb = pal(length(rd.gb), PAL1 );
@@ -149,8 +151,9 @@ void main()
     vec4 feedback = vec4(0);
     vec4 prev = texture(prevtex, uvIn);
     if (toggle20 == 1.) {
-        //feedback = texture(prevtex, texture(tunneltex, uvIn).rg);
+        // Clear
     } else if (toggle21 == 1.) {
+        // Dark clouds
         feedback.rgb = texture(prevtex, uvIn + uvc*rot2(atan(prev.g, prev.r))*0.003).rgb*rot3(vec3(prev.rgb), length(uvIn-0.5)*length(prev))*0.999;
     } else if (toggle22 == 1.) {
 
