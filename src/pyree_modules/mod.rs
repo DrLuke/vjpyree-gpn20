@@ -17,13 +17,13 @@ use crate::pyree_modules::button::{button_system_receive, ButtonBundle};
 
 fn spawn_randomval(mut commands: Commands) {
     // Rand
-    commands.spawn_bundle(RandomValBundle::new(0, "test".to_string(), 0, "".to_string()));
-    commands.spawn_bundle(RandomValBundle::new(1, "test".to_string(), 0, "".to_string()));
-    commands.spawn_bundle(RandomValBundle::new(2, "test".to_string(), 0, "".to_string()));
-    commands.spawn_bundle(RandomValBundle::new(3, "test".to_string(), 0, "".to_string()));
-    commands.spawn_bundle(RandomValBundle::new(4, "test".to_string(), 0, "".to_string()));
-    commands.spawn_bundle(RandomValBundle::new(5, "test".to_string(), 0, "".to_string()));
-    commands.spawn_bundle(RandomValBundle::new(6, "test".to_string(), 0, "".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(0, "Pal Speed".to_string(), 0, "".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(1, "rot vec x".to_string(), 0, "".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(2, "rot vec y".to_string(), 0, "".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(3, "rot vec z".to_string(), 0, "".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(4, "rot intens".to_string(), 0, "".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(5, "fb Phase".to_string(), 0, "".to_string()));
+    commands.spawn_bundle(RandomValBundle::new(6, "UV Phase".to_string(), 0, "".to_string()));
     commands.spawn_bundle(RandomValBundle::new(7, "test".to_string(), 0, "".to_string()));
     commands.spawn_bundle(RandomValBundle::new(8, "test".to_string(), 0, "".to_string()));
     commands.spawn_bundle(RandomValBundle::new(9, "test".to_string(), 0, "".to_string()));
@@ -59,6 +59,10 @@ fn spawn_toggle(mut commands: Commands) {
     // Post feedback select
     for i in 0..6 {
         commands.spawn_bundle(ToggleBundle::new(i+20, "postfb".to_string(), i));
+    }
+    // Palette select
+    for i in 0..6 {
+        commands.spawn_bundle(ToggleBundle::new(i+30, "pal".to_string(), i));
     }
 }
 

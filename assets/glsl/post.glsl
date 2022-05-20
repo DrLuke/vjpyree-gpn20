@@ -100,50 +100,99 @@ uniform float toggle23;
 uniform float toggle24;
 uniform float toggle25;
 
+// Randomvals
+uniform float randomVal0;
+uniform float randomVal0accum;
+uniform float randomVal1;
+uniform float randomVal2;
+uniform float randomVal3;
+uniform float randomVal4;
+uniform float randomVal5;
+uniform float randomVal6;
+uniform float randomVal7;
+uniform float randomVal8;
+uniform float randomVal9;
+
+#define ROTAXIS vec3(randomVal1, randomVal2, randomVal3)
+#define ROTINTENS (randomVal4 * 0.2)
+#define FBPHASE randomVal5
+#define UVPHASE randomVal6
+
 uniform float beat;
+uniform float beatpt1;
 uniform float beataccum;
+uniform float beataccumpt1;
+
+uniform float time;
+uniform vec2 res;
+
+uniform float palval;
 
 #define PAL1 vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,1.0),vec3(0.0,0.33,0.67)
+#define PAL2 vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,1.0),vec3(0.0,0.10,0.20)
+#define PAL3 vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,1.0),vec3(0.3,0.20,0.20)
+#define PAL4 vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,0.5),vec3(0.8,0.90,0.30)
+#define PAL5 vec3(0.8,0.5,0.4),vec3(0.2,0.4,0.2),vec3(2.0,1.0,1.0),vec3(0.0,0.25,0.25)
+#define PAL6 vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,0.5),vec3(0.8,0.90,0.30)
+
+vec3 palsel(float t) {
+    if (palval == 0.) {return pal(t, PAL1);}
+    if (palval == 1.) {return pal(t, PAL2);}
+    if (palval == 2.) {return pal(t, PAL3);}
+    if (palval == 3.) {return pal(t, PAL4);}
+    if (palval == 4.) {return pal(t, PAL5);}
+    if (palval == 5.) {return pal(t, PAL6);}
+    return vec3(0);
+}
+
+#define PAL PAL5
 
 void main()
 {
     // coordinate systems
     vec2 uv = uvIn;
-    vec2 uvc = (uvIn-0.5)*2;
+
+
+    float aspect = res.x/res.y;
+    uv = ((uv-0.5)*vec2(aspect, 1)*rot2(UVPHASE*2.*3.14159))/vec2(aspect, 1) +0.5;
+
+    vec2 uvc = (uv-0.5)*2;
+
+
 
     // Seed selector
     vec4 seed = vec4(0);
     if (toggle10 == 1.) {
         // Tunnel 1 with borders
-        vec3 tun = texture(tunneltex, uvIn).xyz;
-        seed.rgb = pal( tun.r + tun.g + tun.b, PAL1 );
+        vec3 tun = texture(tunneltex, uv).xyz;
+        seed.rgb = palsel( tun.r + tun.g + tun.b - randomVal0accum );
         seed.a = tun.b;
     } else if (toggle11 == 1.) {
         // Tunnel 2 no borders
-        vec3 tun = texture(tunneltex, uvIn).xyz;
-        seed.rgb = pal( tun.r + tun.g, PAL1 );
+        vec3 tun = texture(tunneltex, uv).xyz;
+        seed.rgb = palsel( tun.r + tun.g  - randomVal0accum );
         seed.a = tun.b;
     } else if (toggle12 == 1.) {
         // Simple RD
-        vec4 rd = texture(rdtex, uvIn);
-        seed.rgb = pal(length(rd.gb), PAL1 );
+        vec4 rd = texture(rdtex, uv);
+        seed.rgb = palsel(length(rd.gb - randomVal0accum) );
         seed.a = smoothstep(0.,0.5, rd.b+rd.a);
     } else if (toggle13 == 1.) {
         // Double RD
-        vec4 rd = texture(rdtex, uvIn*2);
-        seed.rgb = pal(length(rd.gb), PAL1 );
+        vec4 rd = texture(rdtex, uv*2);
+        seed.rgb = palsel(length(rd.gb - randomVal0accum) );
         seed.a = smoothstep(0.,0.5, rd.b+rd.a);
     } else if (toggle14 == 1.) {
         // RD on tunnel, masked
-        vec3 tun = texture(tunneltex, uvIn).xyz;
+        vec3 tun = texture(tunneltex, uv).xyz;
         vec4 rd = texture(rdtex, tun.rg*vec2(4,0.5));
-        seed.rgb = pal(length(rd.gb), PAL1 );
+        seed.rgb = palsel(length(rd.gb - randomVal0accum) );
         seed.a = smoothstep(0.,0.5, tun.b * (rd.b+rd.a) * (1-smoothstep(5., 20., tun.y)));
     } else if (toggle15 == 1.) {
         // RD on tunnel, unmasked
-        vec3 tun = texture(tunneltex, uvIn).xyz;
+        vec3 tun = texture(tunneltex, uv).xyz;
         vec4 rd = texture(rdtex, tun.rg*vec2(4,0.5));
-        seed.rgb = pal(length(rd.gb), PAL1 );
+        seed.rgb = palsel(length(rd.gb - randomVal0accum) );
         seed.a = smoothstep(0.,0.5, rd.b+rd.a) * (1-smoothstep(5., 20., tun.y));
     }
 
@@ -156,30 +205,14 @@ void main()
         // Dark clouds
         feedback.rgb = texture(prevtex, uvIn + uvc*rot2(atan(prev.g, prev.r))*0.003).rgb*rot3(vec3(prev.rgb), length(uvIn-0.5)*length(prev))*0.999;
     } else if (toggle22 == 1.) {
-
+        feedback.rgb = texture(prevtex, uvIn + uvc*rot2(atan(prev.g, prev.r))*0.003).rgb*rot3(ROTAXIS, ROTINTENS)*0.999;
     } else if (toggle23 == 1.) {
-
+        feedback.rgb = texture(prevtex, uvIn + vec2(length(uvc))*rot2(FBPHASE*2.*3.14159)*0.01).rgb * rot3(ROTAXIS, ROTINTENS);
     } else if (toggle24 == 1.) {
-
+        feedback.rgb = texture(prevtex, uvIn).rgb;
     } else if (toggle25 == 1.) {
-
+        feedback.rgb = texture(prevtex, uvIn*2.+vec2(time*0.01 + FBPHASE,0)).rgb*0.9;
     }
-
-    /*vec4 prev = texture(prevtex, uvIn);
-    prev = texture(prevtex, uvIn-(prev.rg-0.3)*0.02);
-    vec4 rd = texture(rdtex, uvIn);
-
-    // RD masks
-    float rdMask1 = smoothstep(0.2, 0.5, rd.g);
-    float rdMask2 = smoothstep(0.2, 0.7, rd.b);
-
-
-    colorOut.rgb = vec3(rdMask1);
-
-    colorOut.rgb = mix(rd.rgb*rot3(vec3(1), rd.g), prev.rgb*rot3(vec3(1), 0.15), 1.-rdMask1);
-
-    //colorOut.rgb = vec3(1.-rd.r, 0, rd.g);
-    */
 
     colorOut = mix(clamp(vec4(0), vec4(1), feedback), vec4(seed.rgb, feedback.a), clamp(0, 1, seed.a));
 }

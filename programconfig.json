@@ -23,11 +23,6 @@
       "module": "layermods.post",
       "name": "Post Processing",
       "sortkey": 200
-    },
-    {
-      "module": "layermods.screen",
-      "name": "Screen",
-      "sortkey": 300
     }
   ]
 }

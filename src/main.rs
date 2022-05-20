@@ -35,7 +35,7 @@ fn main() {
         .insert_resource(OscClients {
             clients: vec![
                 // TouchOSC
-                OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([192, 168, 0, 37]), 31337).into()).unwrap(),
+                OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([94, 45, 240, 185]), 31337).into()).unwrap(),
                 // Pyree Engine
                 OscUdpClient::new(SocketAddrV4::new(Ipv4Addr::from([127, 0, 0, 1]), 31338).into()).unwrap(),
                 // Loopback

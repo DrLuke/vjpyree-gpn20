@@ -16,5 +16,5 @@ client = udp_client.SimpleUDPClient(oscip, oscport)
 #            client.send_message("/traktor/beat", msg.type)
 
 while True:
-    time.sleep(0.01)
+    time.sleep(0.04)
     client.send_message("/traktor/beat", [])
