@@ -70,7 +70,6 @@ pub fn traktor_system(osc_clients: ResMut<OscClients>, mut query: Query<(&mut Tr
         Err(e) => return
     };
     if let Some(msg) = osc_method.get_message() {
-        if beat_muted.0 { return; }
         // Messaged from OSC push
         if msg.args.len() == 1 {
             if let OscType::Float(val) = msg.args[0] {
@@ -88,11 +87,13 @@ pub fn traktor_system(osc_clients: ResMut<OscClients>, mut query: Query<(&mut Tr
         // Count up to 24, send beat on 0, reset beat indicator on 12
         traktor.count = traktor.count.rem_euclid(24);
         if traktor.count == 0 {
-            osc_clients.clients[2].send(&OscPacket::Message(OscMessage { addr: "/beat".to_string(), args: vec![] })).unwrap_or(());
-            osc_clients.clients[0].send(&OscPacket::Message(OscMessage { addr: "/beat/led".to_string(), args: vec![(0.1).into()] })).unwrap_or(());
+            if !beat_muted.0 {
+                osc_clients.clients[2].send(&OscPacket::Message(OscMessage { addr: "/beat".to_string(), args: vec![] })).unwrap_or(());
+            }
+            //osc_clients.clients[0].send(&OscPacket::Message(OscMessage { addr: "/beat/led".to_string(), args: vec![(0.1).into()] })).unwrap_or(());
         }
         if traktor.count == 12 {
-            osc_clients.clients[0].send(&OscPacket::Message(OscMessage { addr: "/beat/led".to_string(), args: vec![(0.0).into()] })).unwrap_or(());
+            //sosc_clients.clients[0].send(&OscPacket::Message(OscMessage { addr: "/beat/led".to_string(), args: vec![(0.0).into()] })).unwrap_or(());
         }
     }
 }

@@ -11,7 +11,7 @@ class LayerEntry(BaseEntry):
         self.context.data["beat"] = 0
         self.context.data["beataccum"] = 0
 
-        pt1constant = 5.
+        pt1constant = 2.
         self.beattransition = PT1Transition(pt1constant)
         self.beataccumtransition = PT1Transition(pt1constant)
 

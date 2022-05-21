@@ -76,6 +76,10 @@ vec3 pal( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
     return a + b*cos( 6.28318*(c*t+d) );
 }
 
+vec2 uvcscale(vec2 uv, float scale) {
+    return (uv-0.5) *scale + 0.5;
+}
+
 // -----------------------------------------------------
 
 layout(binding=0) uniform sampler2D prevtex;
@@ -209,7 +213,7 @@ void main()
     } else if (toggle23 == 1.) {
         feedback.rgb = texture(prevtex, uvIn + vec2(length(uvc))*rot2(FBPHASE*2.*3.14159)*0.01).rgb * rot3(ROTAXIS, ROTINTENS);
     } else if (toggle24 == 1.) {
-        feedback.rgb = texture(prevtex, uvIn).rgb;
+        feedback.rgb = texture(prevtex, uvcscale(uv, 1.01-beatpt1*0.02)).rgb;
     } else if (toggle25 == 1.) {
         feedback.rgb = texture(prevtex, uvIn*2.+vec2(time*0.01 + FBPHASE,0)).rgb*0.9;
     }

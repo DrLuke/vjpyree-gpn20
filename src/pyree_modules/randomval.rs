@@ -94,7 +94,7 @@ impl RandomValComponent {
             if let OscType::Float(val) = osc_message.args[0] {
                 if val > 0. {
                     self.beat_divisor += 1;
-                    self.send_messages(osc_client, vec![self.div_label_msg()])
+                    self.send_messages(osc_client, vec![self.   div_label_msg()])
                 }
             }
         }
@@ -151,9 +151,9 @@ impl RandomValComponent {
         }
 
         self.send_messages(osc_client, vec![
-            self.num_label_msg(),
+            //self.num_label_msg(),
             self.rotary_msg(),
-            self.div_label_msg(),
+            //self.div_label_msg(),
         ]);
         self.send_messages(engine_client, vec![
             self.engine_msg()
