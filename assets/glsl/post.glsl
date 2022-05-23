@@ -162,7 +162,9 @@ void main()
 
     vec2 uvc = (uv-0.5)*2;
 
+    uv = uvcscale(uv, 1+beatpt1*0.1);
 
+   //uv = discretize(uv, 80);
 
     // Seed selector
     vec4 seed = vec4(0);
@@ -213,7 +215,7 @@ void main()
     } else if (toggle23 == 1.) {
         feedback.rgb = texture(prevtex, uvIn + vec2(length(uvc))*rot2(FBPHASE*2.*3.14159)*0.01).rgb * rot3(ROTAXIS, ROTINTENS);
     } else if (toggle24 == 1.) {
-        feedback.rgb = texture(prevtex, uvcscale(uv, 1.01-beatpt1*0.02)).rgb;
+        feedback.rgb = texture(prevtex, uvcscale(uv, 1.01-beatpt1*0.02)).rgb * rot3(ROTAXIS, ROTINTENS) * 0.999;
     } else if (toggle25 == 1.) {
         feedback.rgb = texture(prevtex, uvIn*2.+vec2(time*0.01 + FBPHASE,0)).rgb*0.9;
     }

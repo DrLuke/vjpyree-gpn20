@@ -95,7 +95,7 @@ void main()
 
     // MATH to tunnelize uv coordinates
     float a = atan(uv.y, uv.x)/(3.14159*2.);
-    float r = 1. / length(uv);
+    float r = 1. / length(uv) + beatpt1;
     vec2 st = vec2(
     a,
     r
@@ -117,7 +117,7 @@ void main()
     }
     if (toggle7 == 1.) {
         // Rings scrolling
-        colorOut.b += smoothstep(0.7, 0.8, sin(st.y*3. - t));
+        colorOut.b += smoothstep(0.7, 0.8, sin(st.y*3. - t + beataccumpt1));
     }
     if (toggle8 == 1.) {
         // Rings static
